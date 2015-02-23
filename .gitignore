@@ -1,0 +1,8 @@
+.Rproj.user
+.Rhistory
+.RData
+# Folder with cows data
+data
+# hmw1 specification
+hmw1.pdf
+Longitudinal_analysis.Rproj
