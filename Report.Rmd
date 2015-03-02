@@ -11,6 +11,20 @@ output:
 
 # Introduction
 
+The aim is to study the efficacy of different doses of Berenil when applied to cattle in a herd shown to be infected with the parasite of trypanosomosis. The disease is transmitted by the tsetse flies and when animals are infected they often become anaemic and can die.
+A variable often measured to evaluate the severity of the disease is the packed cell volume, PCV.
+
+Variables:
+ID  Dose	PCV	Time	numbirths
+
+These data set is the measurement of PCV on 5 cows.
+
+* the repeated measurement factor is time (Time)
+* there is one "treatment" factor, Dose, with values L, M and H (Low, Medium and High doses of Berenil, respectively)
+* an additional covariate, numbirths, is also available. It indicates the number of biths that a cow had before the treatment administration.
+* the response is PCV-packed cell volume
+
+
 # Summary statistics
 
 # Multivariate model
