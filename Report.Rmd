@@ -1,7 +1,7 @@
 ---
-title: "Untitled"
-author: "Lluis Ramon"
-date: "2 de marzo de 2015"
+title: "Study of the efficacy of Berenil applied to trypanosomosis's infected cattle"
+author: Gerard Castellà, Mathieu Marauri and Lluis Ramon
+date: \today
 output:
   pdf_document:
     number_sections: yes
