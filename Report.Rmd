@@ -1,0 +1,20 @@
+---
+title: "Untitled"
+author: "Lluis Ramon"
+date: "2 de marzo de 2015"
+output:
+  pdf_document:
+    number_sections: yes
+---
+
+# Abstract
+
+# Introduction
+
+# Summary statistics
+
+# Multivariate model
+
+# Two-stage analysis
+
+# Random-effects model
