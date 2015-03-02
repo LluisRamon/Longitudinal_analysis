@@ -3,34 +3,35 @@
 cows <- read.table("data/cattle_mes dades.txt", header = TRUE, 
                    sep = "\t", dec = ",", na.strings = "")
 
-# TODO: Can we change variable names? easier ones? no capital letters, etc?
+names(cows) <- c("id", "dose", "pcv", "time", "nbirth")
 
 str(cows)
 head(cows)
 summary(cows)
 
-table(cows$Time)
-table(cows$numbirths)
-table(cows$numbirths, cows$ID)
+table(cows$time)
+table(cows$nbirth)
+table(cows$nbirth, cows$id)
 
-table(cows$ID)
+table(cows$id)
 
-# There are 9 mesures for each ID
-# TODO: In de .doc says there are 5 cows but there are 10 ID and with different
+# There are 9 mesures for each id
+# TODO: In de .doc says there are 5 cows but there are 10 id and with different
 # doses. I don't understand data.
 
-boxplot(PCV ~ Time, data = cows)
-boxplot(PCV ~ Dose, data = cows)
-boxplot(PCV ~ numbirths, data = cows)
+boxplot(pcv ~ time, data = cows)
+boxplot(pcv ~ dose, data = cows)
+boxplot(pcv ~ nbirth, data = cows)
 
 # Some graphics -----------------------------------------------------------
 
 library(ggplot2) # Package for graphics
 
-qplot(numbirths, PCV, data = cows, facets = .~ Dose, colour = factor(Time))
+qplot(nbirth, pcv, data = cows, facets = .~ dose, colour = factor(time))
 
 
 # Posible graphs, but I am not sure about data structure
-qplot(Time, PCV, data = cows, group = ID, geom = "line", facets = .~ Dose) 
-qplot(Time, PCV, data = cows, group = ID, geom = "line", facets = .~ Dose, 
-      colour = numbirths) 
+qplot(time, pcv, data = cows, group = id, geom = "line", facets = .~ dose) 
+qplot(time, pcv, data = cows, group = id, geom = "line", facets = .~ dose, 
+      colour = nbirth) 
+
