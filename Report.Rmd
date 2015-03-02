@@ -32,3 +32,8 @@ These data set is the measurement of PCV on 5 cows.
 # Two-stage analysis
 
 # Random-effects model
+
+# Bibliography
+
+* [Bovine trypanosomiasis in south-western Uganda: packed-cell volumes and prevalences of infection in the cattle.](http://www.ncbi.nlm.nih.gov/pubmed/15000727)
+* [Evaluating the use of packed cell volume as an indicator of trypanosomal infections in cattle in eastern Zambia](http://www.sciencedirect.com/science/article/pii/S0167587708001098#)
