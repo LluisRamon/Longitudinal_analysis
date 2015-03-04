@@ -35,3 +35,42 @@ qplot(time, pcv, data = cows, group = id, geom = "line", facets = .~ dose)
 qplot(time, pcv, data = cows, group = id, geom = "line", facets = .~ dose, 
       colour = nbirth) 
 
+
+# Add a linear model ------------------------------------------------------
+
+cows$id <- as.factor(cows$id)
+hist(cows$pcv)
+hist(log(cows$pcv))
+
+lcows <- lm(log(pcv) ~ . -id, data = cows)
+summary(lcows)
+vcov(summary(lcows))
+influence(lcows)
+
+plot(lcows)
+
+hist(residuals(lcows))
+
+cows$residual[!is.na(cows$pcv)] <- residuals(lcows)
+              
+plot(cows$id, cows$residual)
+plot(cows$time, cows$residual)
+plot(cows$nbirth, cows$residual)
+plot(cows$dose, cows$residual)
+
+cows$residual <- NULL
+
+library(nlme)
+
+cows.gd <- groupedData(pcv ~ time| id, data = cows, outer = ~ dose)
+plot(cows.gd)
+plot(cows.gd, outer = TRUE)
+
+# Covariance and Correlation Structure
+library(tidyr)
+cows.w <- spread(cows, time, pcv)
+cor(cows.w[, c("1", "2", "3")], use = "complete.obs")
+
+
+cows.lmList <- lmList(pcv ~ time | id, cows, na.action = )
+
