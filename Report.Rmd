@@ -13,19 +13,8 @@ output:
 
 The aim of this study is to assess the efficacy of different doses of Berenil in cattle infected with the trypanosomosis parasite. This disease, transmitted by the tsetse flies, causes an infection characterized by fever, loss of apetite and anaemia, which can lead to death depending on numerous factors such as the number of births or the innate resistance of the host. 
 
-% falta explicar l'estructura de les dades, procés per obtenir la pcv ,...
 
-A variable often measured to evaluate the severity of the disease is the packed cell volume, PCV.
-
-Variables:
-ID  Dose	PCV	Time	numbirths
-
-These data set is the measurement of PCV on 5 cows.
-
-* the repeated measurement factor is time (Time)
-* there is one "treatment" factor, Dose, with values L, M and H (Low, Medium and High doses of Berenil, respectively)
-* an additional covariate, numbirths, is also available. It indicates the number of biths that a cow had before the treatment administration.
-* the response is PCV-packed cell volume
+A cohort of 10 different cows infected by trypanosomosis parasite was selected for the study. Each of the Berenil doses (low, medium and high) was administrated three times (time 1, 2 or 3) in each animal, and also a blood sample was taken at the moment of the administration. The blood samples were analyzed to obtain the packed cell volume (PCV), which measures the percentage of red blood cells in a (properly) centrifugated blood sample. Low counts of PCV is shown to be a good predictor of the presence and severity of the disease, in the absence of other factors that causing anaemia. Another reported covariate, which was suspected to be associated to the potential effect of the Berenil doses, was the number of births previous to the treatment administration.
 
 
 # Summary statistics
