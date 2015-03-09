@@ -17,6 +17,19 @@ The aim of this study is to assess the efficacy of different doses of Berenil in
 A cohort of 10 different cows infected by trypanosomosis parasite was selected for the study. Each of the Berenil doses (low, medium and high) was administrated three times (time 1, 2 or 3) in each animal, and also a blood sample was taken at the moment of the administration. The blood samples were analyzed to obtain the packed cell volume (PCV), which measures the percentage of red blood cells in a (properly) centrifugated blood sample. Low counts of PCV is shown to be a good predictor of the presence and severity of the disease, in the absence of other factors that causing anaemia. Another reported covariate, which was suspected to be associated to the potential effect of the Berenil doses, was the number of births previous to the treatment administration.
 
 
+Introduction:
+
+Cattle are an important economic resource and also a major health factor in many countries. Therefore preventing diseases in a herd is vital. 
+In this study we focus our interest on the parasite of trypanosomosis which can lead to the death of a cow. One medicine, the Berenil, is used to cure the infected cattle. The aim of this research is to determine the efficiency of different doses of Berenil. Finding the most efficient dose, if such a dose exists, is critical when it comes to save both cattle and money. Here lies all the interest of our study. 
+Is there a rank in the efficacy of Berenil doses?  In order to answer this question we will conduct a statistical analysis on a set of infected cows. After studying the data in a descriptive way we will perform a glm study? 
+This statistical investigation will help us show the difference of efficiency between the different Berenil doses based on the characteristics of specific cows. 
+ 
+Dataset:
+
+  Our dataset is made of 10 different cows, id from 1 to 10. For each cow we know the number of calves it had before being infected, it is given by the nbirths variable. The kind of dose of Berenil which was administrated to the cow is low, medium or high. The time factor represents the repeated time of the injection of a given kind of dose.  The response variable is pcv. It stands for Packed-Cell Volume which is an indicator of how sick is the cow. The higher the number is, the healthier the cow is. 
+	Each cow in this dataset was treated three times, hence we will at the beginning at least consider that our dataset contains 30 different cows identified by id and dose. Later on this assumption will be released. The idea behind this differentiation within the same cow is due to the fact that a different Berenil dose is given for each infection. That is to say each cow has been infected three different times by the parasite. 
+	The missing values will not be analysed in this study but we can still assume that they are due to the death of the corresponding cow. 
+
 # Summary statistics
 
 # Multivariate model
