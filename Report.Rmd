@@ -11,6 +11,8 @@ output:
 
 # Introduction
 
+TODO(All): Mix two intoduction
+
 The aim of this study is to assess the efficacy of different doses of Berenil in cattle infected with the trypanosomosis parasite. This disease, transmitted by the tsetse flies, causes an infection characterized by fever, loss of apetite and anaemia, which can lead to death depending on numerous factors such as the number of births or the innate resistance of the host. 
 
 
@@ -32,9 +34,15 @@ Dataset:
 
 # Summary statistics
 
+TODO(Mathieu):
+
 # Multivariate model
 
+TODO(Gerard):
+
 # Two-stage analysis
+
+TODO(Lluís):
 
 # Random-effects model
 
