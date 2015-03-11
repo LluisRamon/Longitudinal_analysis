@@ -113,5 +113,13 @@ summary(modbeta0)
 modbeta1 <- lm(slope ~ factor(id), bdd)
 summary(modbeta1)
 
+# Linear mixed model ------------------------------------------------------
 
+library(lme4)
 
+cows.gd.lme <- lmer(pcv ~ time + (time | idDose), data = cows.com)
+cows.gd.lme <- lmer(pcv ~ time + dose + (time | idDose), data = cows.com)
+
+cows.gd.lme
+
+summary(cows.gd.lme)
