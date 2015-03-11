@@ -60,17 +60,58 @@ plot(cows$dose, cows$residual)
 
 cows$residual <- NULL
 
-library(nlme)
-
-cows.gd <- groupedData(pcv ~ time| id, data = cows, outer = ~ dose)
-plot(cows.gd)
-plot(cows.gd, outer = TRUE)
-
 # Covariance and Correlation Structure
 library(tidyr)
 cows.w <- spread(cows, time, pcv)
 cor(cows.w[, c("1", "2", "3")], use = "complete.obs")
 
+# Two step modeling -------------------------------------------------------
 
-cows.lmList <- lmList(pcv ~ time | id, cows, na.action = )
+library(nlme)  # mainly for graphs
+library(dplyr)
+library(tidyr)
+
+cows.com <- cows[complete.cases(cows), ]
+cows.com$dose.n <- as.numeric(cows.com$dose)
+cows.com$idDose <- paste(cows.com$id, cows.com$dose, sep = "_")
+
+cows.gd <- groupedData(pcv ~ time|idDose, data = cows.com, outer = ~dose) 
+# cows.gd <- groupedData(pcv ~ time|idDose, data = cows.com, inner = ~nbirth)
+
+plot(cows.gd)
+plot(cows.gd, outer = TRUE)
+
+cows.lmList <- lmList(pcv ~ time, cows.gd)
+
+betas <- as.data.frame(coef(cows.lmList))
+
+names(betas) <- c("Intercept", "slope")
+
+betas <- add_rownames(betas, var = "idDose")
+betas.info <- cows.com %>% group_by(idDose, id, dose) %>% summarize(nbirth = mean(nbirth))
+
+bdd <- left_join(betas, betas.info)
+
+# Two stage analysisi with dose
+modbeta0 <- lm(Intercept ~ dose, bdd)
+modbeta0 <- lm(Intercept ~ 0 + dose, bdd) # Intercept 0
+summary(modbeta0)
+
+# Plot the residuals
+plot(modbeta0)
+
+modbeta1 <- lm(slope ~ dose, bdd)
+summary(modbeta1)
+
+# Plot the residuals
+plot(modbeta1)
+
+# Two stage analysisi with id
+modbeta0 <- lm(Intercept ~ factor(id), bdd)
+summary(modbeta0)
+
+modbeta1 <- lm(slope ~ factor(id), bdd)
+summary(modbeta1)
+
+
 
