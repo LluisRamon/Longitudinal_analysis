@@ -32,9 +32,20 @@ Dataset:
 	Each cow in this dataset was treated three times, hence we will at the beginning at least consider that our dataset contains 30 different cows identified by id and dose. Later on this assumption will be released. The idea behind this differentiation within the same cow is due to the fact that a different Berenil dose is given for each infection. That is to say each cow has been infected three different times by the parasite. 
 	The missing values will not be analysed in this study but we can still assume that they are due to the death of the corresponding cow. 
 
+Data assumptions:
+
+* At the first time pcv value is taken and then the dose is given.
+* Dose is assigned randomly in time to the cow.
+
+
 # Summary statistics
 
 TODO(Mathieu):
+
+Missing values:
+
+Describe missing values and get characteristics about data without missings and with missings.
+
 
 # Multivariate model
 
