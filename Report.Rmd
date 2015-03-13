@@ -55,6 +55,30 @@ TODO(Gerard):
 
 TODO(Lluís):
 
+In this section a Two-stage analysis is performed. In the first stage model, a linear regression model is done for each subject separately, being the response variable PVC and it evolves in time with ith cow under treatment jth. In the second stage model, a linear regression model is done for the subject-specific regression coefficients using known covariates.
+
+__Stage 1 Model__
+
+$PCV_{ij} = \beta_{0ij} + \beta_{1ij}time + \epsilon_{ij}$ and $\epsilon_{ij} \sim N(0, \Sigma_ij)$
+
+
+__Stage 2 Model__
+
+$\beta_{0ij} = \beta_0 + \beta_1 doseMedium + \beta_2 doseHigh + \beta_3 numbirths + b_{0ij}$
+
+$\beta_{1ij} = \beta_4 + \beta_5 doseMedium + \beta_6 doseHigh + \beta_7 numbirths + b_{1ij}$
+
+where $b_i \sim N(0, D)$
+
+
+Comments:
+
+* Dose reference value is Low
+* Include numbrith or not
+* Complete cases only
+* idDose 9L i 6L just one observation. No slope.
+* Results
+
 # Random-effects model
 
 # Bibliography
