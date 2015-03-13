@@ -51,9 +51,23 @@ plot(cows$dose, cows$residual)
 cows$residual <- NULL
 
 # Covariance and Correlation Structure
+cor(cows[, 3:5], use = "complete.obs")
+
 library(tidyr)
 cows.w <- spread(cows, time, pcv)
-cor(cows.w[, c("1", "2", "3")], use = "complete.obs")
+cor(cows.w[, c("nbirth", "1", "2", "3")], use = "complete.obs")
+# Correlation for each dose
+
+cond <- cows.w$dose == "L"
+cor(cows.w[cond, c("1", "2", "3")], use = "complete.obs")
+# A lot of missing values
+
+cond <- cows.w$dose == "M"
+cor(cows.w[cond, c("1", "2", "3")], use = "complete.obs")
+
+cond <- cows.w$dose == "H"
+cor(cows.w[cond, c("1", "2", "3")], use = "complete.obs")
+# No missing values
 
 # Two step modeling -------------------------------------------------------
 
