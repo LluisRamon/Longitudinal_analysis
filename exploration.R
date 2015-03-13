@@ -24,7 +24,9 @@ qplot(nbirth, pcv, data = cows, facets = .~ dose, colour = factor(time))
 
 qplot(time, pcv, data = cows, group = id, geom = "line", facets = .~ dose) 
 qplot(time, pcv, data = cows, group = id, geom = "line", facets = .~ dose, 
-      colour = nbirth) 
+      colour = nbirth)
+qplot(time, pcv, data = cows, group = id, geom = "line", facets = .~ dose, 
+      colour = factor(id))
 
 # Add a linear model ------------------------------------------------------
 
@@ -72,18 +74,18 @@ cor(cows.w[cond, c("1", "2", "3")], use = "complete.obs")
 # Two step modeling -------------------------------------------------------
 
 library(nlme)  # mainly for graphs
+# version 3.1-120 is required
 library(dplyr)
-library(tidyr)
 
 cows.com <- cows[complete.cases(cows), ]
-cows.com$dose.n <- as.numeric(cows.com$dose)
 cows.com$idDose <- paste(cows.com$id, cows.com$dose, sep = "_")
 
-cows.gd <- groupedData(pcv ~ time|idDose, data = cows.com, outer = ~dose) 
-# cows.gd <- groupedData(pcv ~ time|idDose, data = cows.com, inner = ~nbirth)
+cows.gd <- groupedData(pcv ~ time|idDose, data = cows.com, 
+                       outer = ~dose, inner = ~nbirth) 
 
 plot(cows.gd)
 plot(cows.gd, outer = TRUE)
+plot(cows.gd, inner = TRUE)
 
 cows.lmList <- lmList(pcv ~ time, cows.gd)
 
@@ -98,7 +100,6 @@ bdd <- left_join(betas, betas.info)
 
 # Two stage analysisi with dose
 modbeta0 <- lm(Intercept ~ dose, bdd)
-modbeta0 <- lm(Intercept ~ 0 + dose, bdd) # Intercept 0
 summary(modbeta0)
 
 # Plot the residuals
@@ -116,6 +117,8 @@ summary(modbeta0)
 
 modbeta1 <- lm(slope ~ factor(id), bdd)
 summary(modbeta1)
+
+lm(slope ~ Intercept, bdd)
 
 # Linear mixed model ------------------------------------------------------
 
