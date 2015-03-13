@@ -4,6 +4,7 @@ cows <- read.table("data/cattle_mes dades.txt", header = TRUE,
                    sep = "\t", dec = ",", na.strings = "")
 
 names(cows) <- c("id", "dose", "pcv", "time", "nbirth")
+cows$dose <- factor(cows$dose, levels = c("L", "M", "H"))
 
 str(cows)
 head(cows)
