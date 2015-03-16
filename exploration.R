@@ -122,11 +122,36 @@ lm(slope ~ Intercept, bdd)
 
 # Linear mixed model ------------------------------------------------------
 
+library(lattice)
 library(lme4)
 
-cows.gd.lme <- lmer(pcv ~ time + (time | idDose), data = cows.com)
+# cows.gd.lme <- lmer(pcv ~ time + (time | idDose) , data = cows.com)
+# cows.gd.lme <- lmer(pcv ~ time + (0 + time | idDose) , data = cows.com)
+# cows.gd.lme <- lmer(pcv ~ time + (1 | idDose) + (0 + time | idDose), 
+#                     data = cows.com) # without correlation between effects
+
 cows.gd.lme <- lmer(pcv ~ time + dose + (time | idDose), data = cows.com)
+cows.gd.lme1 <- lmer(pcv ~ time + dose + (0 + time | idDose), data = cows.com)
+
+xyplot(pcv ~ time | idDose, data = cows.com, type = "l")
+
 
 cows.gd.lme
 
 summary(cows.gd.lme)
+summary(cows.gd.lme1)
+# correlation -1 issues
+# https://stat.ethz.ch/pipermail/r-sig-mixed-models/2010q1/003519.html
+# lRT ~ couleurs + (1 + couleurs | nom)
+# IRT ~ couleurs + (1|nom:couleurs) + (1|nom)
+
+anova(cows.gd.lme, cows.gd.lme1)
+
+
+ranef(cows.gd.lme)
+pr1 <- profile(cows.gd.lme)
+confint(pr1)
+splom(pr1)
+dotplot(ranef(cows.gd.lme, condVar = TRUE))
+dotplot(ranef(cows.gd.lme))
+qqmath(ranef(cows.gd.lme, condVar = TRUE))
