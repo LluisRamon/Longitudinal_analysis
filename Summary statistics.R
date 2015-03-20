@@ -14,6 +14,7 @@ names(cows) <- c("id", "dose", "pcv", "time", "nbirth")
 # Graphics
 install.packages("ggplot2")
 library(ggplot2)
+library(nlme)
 
 # -------------------------------------------------------------------------------- #
 
@@ -106,7 +107,7 @@ boxplot(pcv ~ dose, data = cowstreated,main="Pcv after treatment")
 qplot(time, pcv, data = cows, group=id, geom="line", facets=.~ dose, 
       main="PCV evolution")
 
-lcowsdose <- lm(pcv~dose -id, data = cows)
+lcowsdose <- lm(pcv~dose, data = cows)
 summary(lcowsdose)
 
 # -------------------------------------------------------------------------------- #
@@ -118,15 +119,15 @@ cowstime1 <- subset(cows, time==1)
 cowstime2 <- subset(cows, time==2)
 cowstime3 <- subset(cows, time==3)
 
-boxplot(cowstime1$pcv, data=cowstime1, main="Pcv at time 1")
+boxplot(cowstime1$pcv,data=cowstime1,xlab="time",ylab="pcv",main="Pcv at time 1")
 
 summary(cowstime1)
 summary(cowstime2)
 summary(cowstime3)
 
-boxplot(pcv ~ time, data = cows,main="Boxplot pcv~time")
+boxplot(pcv ~ time,data = cows,xlab="time",ylab="pcv",main="Boxplot pcv bytime")
 
-lcowstime <- lm(pcv~time -id, data = cows)
+lcowstime <- lm(pcv~time, data = cows)
 summary(lcowstime)
 
 # Effect of the first dose
@@ -270,12 +271,13 @@ rowMeans(effect2nddose,na.rm=TRUE)
 # the doses. The high dose is reponsible for an increase in pcv much more important thant the two
 # other doses, medium and low.
 
-
 # -------------------------------------------------------------------------------- #
+
 
   # Influence of nbirth #
 
-boxplot(pcv ~ nbirth, data = cows,main="Boxplot pcv~nbirth")
+plot(cows$nbirth,cows$pcv)
+boxplot(pcv ~ nbirth, xlab="time",ylab="pcv",data = cows,main="Boxplot pcv by nbirth")
 
 table(cows$nbirth)
 
@@ -283,10 +285,65 @@ boxplot(pcv ~ nbirth, data = cowstime1,main="Boxplot pcv~nbirth, time 1")
 boxplot(pcv ~ nbirth, data = cowstime2,main="Boxplot pcv~nbirth, time 2")
 boxplot(pcv ~ nbirth, data = cowstime3,main="Boxplot pcv~nbirth, time 3")
 
-lcowsnbirth <- lm(pcv~nbirth -id, data = cows)
+lcowsnbirth <- lm(pcv~nbirth, data = cows)
 summary(lcowsnbirth)
 
-# It is difficult to conclue on the influence of the number of births.
+# Effect of nbirth on the effect of dose.
+
+t(effect1stdose[1,])
+cows.nbirth <- as.factor(cows[1+9*(0:9),"nbirth"])
+
+# Effect of the first high dose.
+cows.effect1stdosehigh.nbirth <- data.frame(t(effect1stdose[1,]),cows.nbirth)
+lcows.effect1stdosehigh.nbirth <- lm(high~cows.nbirth,data=cows.effect1stdosehigh.nbirth)
+summary(lcows.effect1stdosehigh.nbirth)
+
+# Effect of the second high dose.
+cows.effect2nddosehigh.nbirth <- data.frame(t(effect2nddose[1,]),cows.nbirth)
+lcows.effect2nddosehigh.nbirth <- lm(high~cows.nbirth,data=cows.effect2nddosehigh.nbirth)
+summary(lcows.effect2nddosehigh.nbirth)
+
+# Effect of the first medium dose.
+cows.effect1stdosemedium.nbirth <- data.frame(t(effect1stdose[2,]),cows.nbirth)
+lcows.effect1stdosemedium.nbirth <- lm(medium~cows.nbirth,data=cows.effect1stdosemedium.nbirth)
+summary(lcows.effect1stdosemedium.nbirth)
+
+# Effect of the second medium dose.
+cows.effect2nddosemedium.nbirth <- data.frame(t(effect2nddose[2,]),cows.nbirth)
+lcows.effect2nddosemedium.nbirth <- lm(medium~cows.nbirth,data=cows.effect2nddosemedium.nbirth)
+summary(lcows.effect2nddosemedium.nbirth)
+
+# Effect of the first low dose.
+cows.effect1stdoselow.nbirth <- data.frame(t(effect1stdose[3,]),cows.nbirth)
+lcows.effect1stdoselow.nbirth <- lm(low~cows.nbirth,data=cows.effect1stdoselow.nbirth)
+summary(lcows.effect1stdoselow.nbirth)
+
+# Effect of the second low dose.
+cows.effect2nddoselow.nbirth <- data.frame(t(effect2nddose[3,]),cows.nbirth)
+lcows.effect2nddoselow.nbirth <- lm(low~cows.nbirth,data=cows.effect2nddoselow.nbirth)
+summary(lcows.effect2nddoselow.nbirth)
+
+# None of the linear models has significant parameters.
+# It is difficult to say something about the influence of nbirth.
+
+# Influence of nbirth and pcv at time 1
+
+cows.high.time1 <- subset(cowstime1,dose=="H")
+cows.medium.time1 <- subset(cowstime1,dose=="M")
+cows.low.time1 <- subset(cowstime1,dose=="L")
+cows.time1nbirth.effect1stdosehigh <- data.frame(t(effect1stdose[1,]),cows.high.time1)
+cows.time1nbirth.effect1stdosemedium <- data.frame(t(effect1stdose[2,]),cows.medium.time1)
+cows.time1nbirth.effect1stdoselow <- data.frame(t(effect1stdose[3,]),cows.low.time1)
+
+lcows.time1nbirth.effect1stdosehigh <- lm(high~pcv*nbirth,data=cows.time1nbirth.effect1stdosehigh)
+summary(lcows.time1nbirth.effect1stdose)
+
+lcows.time1nbirth.effect1stdosemedium <- lm(medium~pcv*nbirth,
+                                            data=cows.time1nbirth.effect1stdosemedium)
+summary(lcows.time1nbirth.effect1stdosemedium)
+
+lcows.time1nbirth.effect1stdoselow <- lm(low~pcv*nbirth,data=cows.time1nbirth.effect1stdoselow)
+summary(lcows.time1nbirth.effect1stdoselow)
 
 # -------------------------------------------------------------------------------- #
 
@@ -294,22 +351,29 @@ summary(lcowsnbirth)
   # Missing values #
 
 cowssinna <- cows[complete.cases(cows),]
-cowssinna
+length(cowssinna[,1])
 summary(cowssinna)
 cowsna <- cows[!complete.cases(cows),]
-cowsna
+length(cowsna[,1])
 summary(cowsna)
 
 # It is clear that no cows died when treated with a high dose. If a cow dies while being treated
 # with the medium dose it is always at time 3 whereas it can die at time 2 when treated with 
 # the low dose. 
 
+# Mean of the pcv values before the missing value.
+(19.3+18.9+20.2+19.9+17.8+17.5+19.8+16.7+17.1)/9
+
 # -------------------------------------------------------------------------------- #
 
   # Linear model #
 
-lcows <- lm(pcv~. -id, data = cows)
+lcows <- lm(pcv~., data = cows)
 summary(lcows)
+par(mfrow=c(2,2))
 plot(lcows)
-hist(residuals(lcows))
-
+confint(lcows, level=0.95)
+lcows.dose.time.id <- lm(pcv ~dose+time+id, data=cows)
+summary(lcows.dose.time.id)
+confint(lcows.dose.time.id, level=0.95)
+par(mfrow=c(1,1))
