@@ -182,6 +182,15 @@ Comments:
 
 # Random-effects model
 
+In this section a Random-effects model is performed. The methodology that is taken
+
+1. Model for the fixed effects
+2. Include a Random effect
+3. Add a correlation structure
+
+Our first model will include the dose.
+
+
 
 $PCV_{i} = (\beta_{0} + b_{0i}) + (\beta_{1} + b_{1i})time + \beta_2 doseMedium + \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}$ and $\epsilon_{i} \sim N(0, \Sigma_ij)$
 
