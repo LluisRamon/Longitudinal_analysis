@@ -169,3 +169,27 @@ splom(pr1)
 dotplot(ranef(cows.gd.lme, condVar = TRUE))
 dotplot(ranef(cows.gd.lme))
 qqmath(ranef(cows.gd.lme, condVar = TRUE))
+
+# Models with lme for including correlation structure
+
+cows.gd <- groupedData(pcv ~ time|idDose, data = cows.com, 
+                       outer = ~dose, inner = ~nbirth)
+
+cows.gd <- groupedData(pcv ~ time|idDose, data = cows.com, 
+                       inner = ~nbirth) 
+
+mod1 <- lme(pcv ~ time + dose, data = cows.gd)
+mod1 <- lme(pcv ~ time + dose, random = ~1|idDose, data = cows.gd)
+# mod1 <- lme(pcv ~ time + dose, random = ~time|idDose, data = cows.gd) 
+# Convergence problems. Seen in previous models correlation -1 between random effects
+mod1 <- lme(pcv ~ time + dose, random = ~time -1|idDose, data = cows.gd)
+mod1 <- lme(pcv ~ time + dose, random = list(~1|idDose, ~time-1|idDose), data = cows.gd)
+
+summary(mod1)
+
+
+mod1 <- lme(pcv ~ time + dose, random = ~time -1|idDose, 
+            correlation = corAR1(0.5), data = cows.gd)
+mod1 <- lme(pcv ~ time + dose, random = ~time -1|idDose, 
+            correlation = corAR1(form = ~1|idDose), data = cows.gd)
+summary(mod1)
