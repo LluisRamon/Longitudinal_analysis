@@ -1,3 +1,9 @@
+#' ---
+#' title: "Study of the efficacy of Berenil applied to trypanosomosis's infected cattle"
+#' author: Gerard Castellà, Mathieu Marauri and Lluis Ramon
+#' date: \today
+#' ---
+  
 # Import dataset ----------------------------------------------------------
 
 cows <- read.table("data/cattle_mes dades.txt", header = TRUE, 
@@ -5,17 +11,8 @@ cows <- read.table("data/cattle_mes dades.txt", header = TRUE,
 
 names(cows) <- c("id", "dose", "pcv", "time", "nbirth")
 
-str(cows)
-head(cows)
-summary(cows)
-
 cows$id <- as.factor(cows$id)
 cows$dose <- factor(cows$dose, levels=c("L", "M", "H"))
-
-hist(cows$pcv)
-hist(log(cows$pcv))
-shapiro.test(cows$pcv)
-
 
 ########
 ## LM ##
@@ -27,11 +24,14 @@ shapiro.test(cows$pcv)
 # indep variables:
 # dose: we want to know if the dose is associated with lower PCV
 # nbirth: we want to know if this covariate influences the effect of the dose.
-# time: we dont particularly want to see differences in time, but maybe 3rd observations of the doses are higher, ...
+# time: we dont particularly want to see differences in time, but maybe 
+# 3rd observations of the doses are higher, ...
 
 # we do not want:
 # id: we dont want the effect of the dose to be explained by the cow.
-#     Each observation of each cow will be considered independent.
+
+# Each observation of each cow will be considered independent.
+
 table(cows$time, is.na(cows$pcv))
 
 model <- lm(pcv ~ time + dose, data=cows)
