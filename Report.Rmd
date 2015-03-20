@@ -35,6 +35,8 @@ Data assumptions:
 
 * At the first time pcv value is taken and then the dose is given.
 * Dose is assigned randomly in time to the cow.
+* The first treatment do not affect the next treatment in the cows.
+* Missings are complitely at random.
 
 # Summary statistics
 
