@@ -7,6 +7,20 @@ output:
     number_sections: yes
 ---
 
+```{r, echo = FALSE, warning = FALSE}
+library("knitr")
+opts_chunk$set(echo = FALSE, eval = FALSE, warning = FALSE)
+```
+
+```{r}
+cows <- read.table("data/cattle_mes dades.txt", header = TRUE, 
+                   sep = "\t", dec = ",", na.strings = "")
+
+names(cows) <- c("id", "dose", "pcv", "time", "nbirth")
+cows$dose <- factor(cows$dose, levels = c("L", "M", "H"))
+```
+
+
 # Abstract
 
 # Introduction
@@ -167,6 +181,7 @@ Comments:
 * Results
 
 # Random-effects model
+
 
 $PCV_{i} = (\beta_{0} + b_{0i}) + (\beta_{1} + b_{1i})time + \beta_2 doseMedium + \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}$ and $\epsilon_{i} \sim N(0, \Sigma_ij)$
 
