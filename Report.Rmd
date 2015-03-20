@@ -18,25 +18,23 @@ The aim of this study is to assess the efficacy of different doses of Berenil in
 
 A cohort of 10 different cows infected by trypanosomosis parasite was selected for the study. Each of the Berenil doses (low, medium and high) was administrated three times (time 1, 2 or 3) in each animal, and also a blood sample was taken at the moment of the administration. The blood samples were analyzed to obtain the packed cell volume (PCV), which measures the percentage of red blood cells in a (properly) centrifugated blood sample. Low counts of PCV is shown to be a good predictor of the presence and severity of the disease, in the absence of other factors that causing anaemia. Another reported covariate, which was suspected to be associated to the potential effect of the Berenil doses, was the number of births previous to the treatment administration.
 
-
 Introduction:
 
-Cattle are an important economic resource and also a major health factor in many countries. Therefore preventing diseases in a herd is vital. 
-In this study we focus our interest on the parasite of trypanosomosis which can lead to the death of a cow. One medicine, the Berenil, is used to cure the infected cattle. The aim of this research is to determine the efficiency of different doses of Berenil. Finding the most efficient dose, if such a dose exists, is critical when it comes to save both cattle and money. Here lies all the interest of our study. 
-Is there a rank in the efficacy of Berenil doses?  In order to answer this question we will conduct a statistical analysis on a set of infected cows. After studying the data in a descriptive way we will perform a glm study? 
-This statistical investigation will help us show the difference of efficiency between the different Berenil doses based on the characteristics of specific cows. 
+  Cattle are an important economic resource and also a major health factor in many countries. Therefore preventing diseases in a herd is vital. 
+  In this study we focus our interest on the parasite of trypanosomosis which can lead to the death of a cow. One medicine, the Berenil, is used to cure the infected cattle. The aim of this research is to determine the efficiency of different doses of Berenil. Finding the most efficient dose, if such a dose exists, is critical when it comes to save both cattle and money. Here lies all the interest of our study. 
+  Is there a rank in the efficacy of Berenil doses?  In order to answer this question we will conduct a statistical analysis on a set of infected cows. After studying the data in a descriptive way we will perform a multivariate analysis in order to know the effect of each variable on the pcv value. Then the study of a linear mixed model will highlight the effect of each cow.
+  This statistical investigation will help us show the difference of efficiency between the different Berenil doses based on the characteristics of specific cows. 
  
 Dataset:
 
-  Our dataset is made of 10 different cows, id from 1 to 10. For each cow we know the number of calves it had before being infected, it is given by the nbirths variable. The kind of dose of Berenil which was administrated to the cow is low, medium or high. The time factor represents the repeated time of the injection of a given kind of dose.  The response variable is pcv. It stands for Packed-Cell Volume which is an indicator of how sick is the cow. The higher the number is, the healthier the cow is. 
-	Each cow in this dataset was treated three times, hence we will at the beginning at least consider that our dataset contains 30 different cows identified by id and dose. Later on this assumption will be released. The idea behind this differentiation within the same cow is due to the fact that a different Berenil dose is given for each infection. That is to say each cow has been infected three different times by the parasite. 
-	The missing values will not be analysed in this study but we can still assume that they are due to the death of the corresponding cow. 
+ A cohort of 10 different cows infected by trypanosomosis parasite was selected for the study. Each of the Berenil doses (low, medium and high) was administrated three times (time 1, 2 or 3) for each animal. The response variable is pcv. It stands for Packed-Cell Volume which is an indicator of how sick is the cow. A low PCV value is said to be a good predictor of the presence and severity of the disease, hence the higher the pcv is, the healthier the cow is. This value is obtained before the treatment therefore in our dataset we only have access to the effect of the first two injections. For each cow we also know the number of calves it had before being infected. Giving birth is supposed to weaken the cow, besides *nbirth* is also an indicator of how old the cow is.  
+  Each cow in this dataset was treated three times, hence we will, at the beginning at least, consider that our dataset contains 30 different cows identified by id and dose. Later on this assumption will be released. The idea behind this differentiation within the same cow is due to the fact that a different Berenil dose was given for each infection. That is to say each cow has been infected three different times by the parasite. 
+	The missing values will not be thoroughly analysed in this study but we can still assume that they are due to the death of the corresponding cow. 
 
 Data assumptions:
 
 * At the first time pcv value is taken and then the dose is given.
 * Dose is assigned randomly in time to the cow.
-
 
 # Summary statistics
 
@@ -46,6 +44,93 @@ Missing values:
 
 Describe missing values and get characteristics about data without missings and with missings.
 
+In this part the aim is to have some insights about our data. By performing a basic statistical analysis some relations between the explaining variables and the response one will emerge. This way we will have a first idea on how we can explain the response variable and also some answers when it comes to knowing the most efficient dose.  
+We will try so see the effect of each variable on the response variable in order to have ideas on the future results.
+
+First we need to know basic information about the data. In our dataset we only have sick cows therefore the value of the Packed Cell Volume are low. A "regular" cow should have a pcv between 24 and 46%. Here the mean is slightly above 20% as we can see in the following summary. 
+
+```{r, echo=FALSE}
+summary(cows)
+```
+
+
+Pcv values after treatment were included in the boxplot; this is why the upper part is wider. If we only take into account the pcv values before treatment then we have a different repartition.
+
+```{r, echo=FALSE}
+boxplot(cowstime1$pcv, data=cowstime1, main="Pcv at time 1")
+```
+
+Here the mean drops to 17.6% and the median to 16.8. We can already see the positive impact of the treatment. This result was of course expected. 
+
+Now we will try to have some insights based on a global approach.
+We can have a global idea on how interact the response variable and the other one in the following graphic.
+
+```{r, echo=FALSE}
+qplot(time, pcv, data = cows, main="Global view",group = id, geom = "line", facets = .~ dose, 
+      colour = nbirth) 
+```
+
+This graphic gives us much information. The first one is the main difference between the kinds of dose. It seems that cows treated with the high dose tend to have their pcv value higher than the other ones.  One could also think that time has an influence on the pcv in the way that the effect of the second dose seems to be less important than the first one. When it comes to the effect of nbirth this graph does not provide us with useful information or at least an idea on whether this variable has a positive effect on the response variable or not. 
+
+From mow on we will try to analize the influene of each factor on the response varaible, *pcv*. The point is to study the dataset so that the relations between covariates and the response variable appear more clearly. 
+
+xxxxxxxxxxxxxxxxxxxxxx
+The influence of the covariate *dose* is expected to be positive. Indeed we expect to find that the high dose is more efficient than the medium and the low one. In order to verify if this is true we first plot the boxplot of the pcv depending on the dose. We only take into account the values after treatment, that is to say for time 2 and 3.
+
+```{r, echo=FALSE}
+boxplot(pcv ~ dose, data = cowstreated,main="Pcv after treatment")
+```
+
+Whereas a big difference between the low and the medium dose does not appear; the pcv values obtained after the injection of a high dose are quite superior to the other ones.  The previous boxplot summarize the values taken by the response variable pcv based on which dose was used. 
+The means for each dose, high, medium and low are respectively 25.23, 21.13 and 19.79. We can clearly see that pcv values are higher when the cows are treated with the high dose.
+A linear regression model on the dose reinforces the idea that the high dose has a positive effect on the pcv, as we can see in this summary of the results.
+
+```{r, echo=FALSE}
+lcowsdose <- lm(pcv~dose, data = cows)
+summary(lcowsdose)
+```
+
+
+The estimated coefficients for the medium and the low dose are both negative which means that these doses are less efficient when it comes to increase the pcv value. The high dose was taken as the reference in this regression.
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxx
+As for the dose we expect a positive correlation between the time and the pcv since the more the cow receives the treatment the more it is supposed to be healthy (high value for the *pcv*). The best way to visualise the influence of time that is to say of the treatment is a boxplot.
+
+```{r, echo=FALSE}
+boxplot(pcv ~ time,data = cows,xlab="time",ylab="pcv"main="Boxplot pcv by time")
+```
+
+We only have access to the first and the second effect of the iinjections which means to time 2 and time 3. The third injection, at time 3, is given after the getting of the pcv value. Nevertheless by comparing the evolution in pcv values between time 2 and 1, and time 3 and 2 that is to say between the first and the second injections we can see some significant differences. Since there are a lot of missing values for the low dose we can only analyze the differences for the medium and the high doses. In both cases, and especially for the high dose, the effect of the first injection is more important than the one of the second injection. The following tables summarize this information. In the first table we have the mean effect of the first injection for the three types of dose and onthe second table we have the sam einformation for the second injection.
+
+```{r, echo=FALSE}
+rowMeans(effect1stdose,na.rm=TRUE)
+rowMeans(effect2nddose,na.rm=TRUE)
+```
+
+The relative "superiority" of the first injection is to be put into perspective because the second one is performed with an initail pcv value higher.
+This analysis also highlights the efficiency of the high dose as compared to the medium one. 
+
+xxxxxxxxxxxxxx
+The covariate *nbirth* is the only variable which differences the cows, except the id of course. Based on the idea that the cow is supposed to be weaker if it had a lot of calves we expect a negative influence of *nbirth* on *pcv*.
+Graphically nothing obvious appears.
+
+```{r, echo=FALSE}
+boxplot(pcv ~ nbirth, xlab="nbirth",ylab="pcv",data = cows,main="Boxplot pcv by nbirth")
+```
+
+Even when we repeat the plot for each time, no pattern appears. A simple regression model with the following results does not show any significant relation either.
+
+```{r, echo=FALSE}
+lcowsnbirth <- lm(pcv~nbirth, data = cows)
+summary(lcowsnbirth)
+```
+
+The covariate *nbirth* alone does not influence the response variable. The previous number of calves a given cow had does not help one foresee the future pcv values of this cow.
+
+
+xxxxxxxxxxxx
+In our dataset we have a lot of missing values. Among the 90 lines of our dataset the pcv value is missing for 14 of them. The assumption we made saying that missing values are due to the death of the cow stands since values are mainly missing at time 3. Whenever the pcv values are missing for time 1, 2 and 3 it is because the cow supposedly died at a previous time 3 (for another infection of the parasite). 
+Once again the inefficiency of the low dose (relatively to the other doses) appears clearly since the cow seems to die more likely when treated with the low dose. In fact on 14 missing values 8 are missing for the low dose and only 3 for th emedium one. The remaining 3 are for time 1, 2 and 3 of the medium dose of cow 5 which died at time 3 of the low dose.
 
 # Multivariate model
 
@@ -80,6 +165,10 @@ Comments:
 * Results
 
 # Random-effects model
+
+$PCV_{i} = (\beta_{0} + b_{0i}) + (\beta_{1} + b_{1i})time + \beta_2 doseMedium + \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}$ and $\epsilon_{i} \sim N(0, \Sigma_ij)$
+
+
 
 # Bibliography
 
