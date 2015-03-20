@@ -57,7 +57,7 @@ cor(cows[, 3:5], use = "complete.obs")
 
 library(tidyr)
 cows.w <- spread(cows, time, pcv)
-cor(cows.w[, c("nbirth", "1", "2", "3")], use = "complete.obs")
+cor(cows.w[, c("1", "2", "3")], use = "complete.obs")
 # Correlation for each dose
 
 cond <- cows.w$dose == "L"
@@ -149,8 +149,21 @@ anova(cows.gd.lme1, cows.gd.lme10)
 # This model looks to be better
 cows.gd.lme10
 
-ranef(cows.gd.lme)
-pr1 <- profile(cows.gd.lme)
+residus <- residuals(cows.gd.lme10)
+
+plot(residus)
+hist(residus)
+
+plot(cows.gd.lme10)
+plot(cows.gd.lme10, dose ~ resid(., scaled=TRUE))
+VarCorr(cows.gd.lme10)
+
+intervals(cows.gd.lme10)
+qqnorm(cows.gd.lme10)
+
+
+ranef(cows.gd.lme10)
+pr1 <- profile(cows.gd.lme10)
 confint(pr1)
 splom(pr1)
 dotplot(ranef(cows.gd.lme, condVar = TRUE))
