@@ -185,6 +185,9 @@ mod1 <- lme(pcv ~ time + dose, random = ~1|idDose, data = cows.gd)
 mod1 <- lme(pcv ~ time + dose, random = ~time -1|idDose, data = cows.gd)
 mod1 <- lme(pcv ~ time + dose, random = list(~1|idDose, ~time-1|idDose), data = cows.gd)
 
+# Alternative model specification
+mod1 <- lme(pcv ~ time + dose, random = ~1|id/dose, data = cows.com)
+
 summary(mod1)
 
 
