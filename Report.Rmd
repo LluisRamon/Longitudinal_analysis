@@ -1,15 +1,18 @@
 ---
 title: "Study of the efficacy of Berenil applied to trypanosomosis's infected cattle"
-author: Gerard Castellà, Mathieu Marauri and Lluis Ramon
+author: "Gerard Castellà, Mathieu Marauri and Lluis Ramon"
 date: \today
 output:
   pdf_document:
+    fig_caption: yes
     number_sections: yes
 ---
 
 ```{r, echo = FALSE, warning = FALSE}
 library("knitr")
-opts_chunk$set(echo = FALSE, eval = FALSE, warning = FALSE)
+library("ggplot2")
+library("xtable")
+opts_chunk$set(echo = FALSE, eval = TRUE, warning = FALSE)
 ```
 
 ```{r}
@@ -94,93 +97,52 @@ A validation of the model was performed to check that the residuals were normal,
 
 # Summary statistics
 
-In this part the aim is to have some insights about our data. By performing a basic statistical analysis some relations between the explaining variables and the response one will emerge. This way we will have a first idea on how we can explain the response variable and also some answers when it comes to knowing the most efficient dose.  
-We will try so see the effect of each variable on the response variable in order to have ideas on the future results.
+In this part the aim is to have some insights about the data. By performing a basic statistical analysis some relations between the explaining variables and the response one would emerged. A first idea on how we can explain the response variable and also some answers when it comes to discovering the most efficient dose.
 
-First we need to know basic information about the data. In our dataset we only have sick cows therefore the value of the Packed Cell Volume are low. A "regular" cow should have a pcv between 24 and 46%. Here the mean is slightly above 20% as we can see in the following summary. 
-
-```{r, echo=FALSE}
-summary(cows)
+```{r qplot, fig.cap = "PCV evolution for each cow on every dose. Cows are colored in the same fashion for each dose."}
+qplot(time, pcv, data = cows, group = id, geom = "line", facets = .~ dose, 
+      colour = factor(id)) + scale_color_discrete(guide = 'none')
 ```
 
 
-Pcv values after treatment were included in the boxplot; this is why the upper part is wider. If we only take into account the pcv values before treatment then we have a different repartition.
+PCV values seem similar for each dose at time 1, which makes sense with several assumptions previously stated. Especially the fact that the PCV is taken before treatment. The unfinished evolutions in Figure X1 represent missing values in the data, more details about missing data are reported in the section (X 5.3). Notice that several cows with low PCV values in Low dose also have low PCV values in the other doses. 
 
-```{r, echo=FALSE}
-boxplot(cowstime1$pcv, data=cowstime1, main="Pcv at time 1")
+Cows treated with high doses tend to have a better evoloution in their PCV values. One could also think that time has an influence on the PCV in the way that the effect of the second dose seems to be less important than the first one. 
+
+
+The mean influence of the covariate *time* is expected to be positive. Indeed one expects to higher PCV values after treatment. Also the High dose is expected to be more efficient than the Medium and Low one. This can be verified in Figure \ref{boxplot_time_dose}.
+
+```{r boxplot, fig.cap = "Boxplot of PCV values for each time and dose. \\label{boxplot_time_dose}"}
+boxplot(pcv ~  time + dose, data = cows)
 ```
 
-Here the mean drops to 17.6% and the median to 16.8. We can already see the positive impact of the treatment. This result was of course expected. 
+In Figure \ref{boxplot_time_dose} it can be apreciated that there is not a big difference between the low and the medium doses. However the High dose is much better than the others. For instance the mean PCV value at time 2 for the High dose is bigger than mean PCV value at time 3 for the Medium or Low dose.
 
-Now we will try to have some insights based on a global approach.
-We can have a global idea on how interact the response variable and the other one in the following graphic.
+## Number of births
 
-```{r, echo=FALSE}
-qplot(time, pcv, data = cows, main="Global view",group = id, geom = "line", facets = .~ dose, 
-      colour = nbirth) 
-```
+None of the cows gave birth after time 1 of the first infection. So the number of births remains constant through all doses and times for each cow. 
 
-This graphic gives us much information. The first one is the main difference between the kinds of dose. It seems that cows treated with the high dose tend to have their pcv value higher than the other ones.  One could also think that time has an influence on the pcv in the way that the effect of the second dose seems to be less important than the first one. When it comes to the effect of nbirth this graph does not provide us with useful information or at least an idea on whether this variable has a positive effect on the response variable or not. 
+Some boxplots were performed but it didn't show any clear result, although a tendency may be seen at time 1. A simple regression model was also fit at time 1 with a significant (p = 0.007) a slope  of -0.3444. It may explain the fact that a cow is supposed to be weaker if it had a lot of calves. Latter on the analysis the nbirth effect will be combined with other variables.
 
-From mow on we will try to analize the influene of each factor on the response varaible, *pcv*. The point is to study the dataset so that the relations between covariates and the response variable appear more clearly. 
-
-xxxxxxxxxxxxxxxxxxxxxx
-The influence of the covariate *dose* is expected to be positive. Indeed we expect to find that the high dose is more efficient than the medium and the low one. In order to verify if this is true we first plot the boxplot of the pcv depending on the dose. We only take into account the values after treatment, that is to say for time 2 and 3.
-
-```{r, echo=FALSE}
-boxplot(pcv ~ dose, data = cowstreated,main="Pcv after treatment")
-```
-
-Whereas a big difference between the low and the medium dose does not appear; the pcv values obtained after the injection of a high dose are quite superior to the other ones.  The previous boxplot summarize the values taken by the response variable pcv based on which dose was used. 
-The means for each dose, high, medium and low are respectively 25.23, 21.13 and 19.79. We can clearly see that pcv values are higher when the cows are treated with the high dose.
-A linear regression model on the dose reinforces the idea that the high dose has a positive effect on the pcv, as we can see in this summary of the results.
-
-```{r, echo=FALSE}
-lcowsdose <- lm(pcv~dose, data = cows)
-summary(lcowsdose)
-```
-
-
-The estimated coefficients for the medium and the low dose are both negative which means that these doses are less efficient when it comes to increase the pcv value. The high dose was taken as the reference in this regression.
-
-xxxxxxxxxxxxxxxxxxxxxxxxxxx
-As for the dose we expect a positive correlation between the time and the pcv since the more the cow receives the treatment the more it is supposed to be healthy (high value for the *pcv*). The best way to visualise the influence of time that is to say of the treatment is a boxplot.
-
-```{r, echo=FALSE}
-boxplot(pcv ~ time,data = cows,xlab="time",ylab="pcv"main="Boxplot pcv by time")
-```
-
-We only have access to the first and the second effect of the iinjections which means to time 2 and time 3. The third injection, at time 3, is given after the getting of the pcv value. Nevertheless by comparing the evolution in pcv values between time 2 and 1, and time 3 and 2 that is to say between the first and the second injections we can see some significant differences. Since there are a lot of missing values for the low dose we can only analyze the differences for the medium and the high doses. In both cases, and especially for the high dose, the effect of the first injection is more important than the one of the second injection. The following tables summarize this information. In the first table we have the mean effect of the first injection for the three types of dose and onthe second table we have the sam einformation for the second injection.
-
-```{r, echo=FALSE}
-rowMeans(effect1stdose,na.rm=TRUE)
-rowMeans(effect2nddose,na.rm=TRUE)
-```
-
-The relative "superiority" of the first injection is to be put into perspective because the second one is performed with an initail pcv value higher.
-This analysis also highlights the efficiency of the high dose as compared to the medium one. 
-
-xxxxxxxxxxxxxx
-The covariate *nbirth* is the only variable which differences the cows, except the id of course. Based on the idea that the cow is supposed to be weaker if it had a lot of calves we expect a negative influence of *nbirth* on *pcv*.
-Graphically nothing obvious appears.
-
-```{r, echo=FALSE}
-boxplot(pcv ~ nbirth, xlab="nbirth",ylab="pcv",data = cows,main="Boxplot pcv by nbirth")
-```
-
-Even when we repeat the plot for each time, no pattern appears. A simple regression model with the following results does not show any significant relation either.
-
-```{r, echo=FALSE}
-lcowsnbirth <- lm(pcv~nbirth, data = cows)
+```{r, eval = FALSE}
+lcowsnbirth <- lm(pcv ~ nbirth, data = cows[cows$time == 1,])
 summary(lcowsnbirth)
 ```
 
-The covariate *nbirth* alone does not influence the response variable. The previous number of calves a given cow had does not help one foresee the future pcv values of this cow.
+## Missing data analysis
 
+There are 14 missing PCV values out of 90 observations in the dataset. Those missing values are equally distributed among doses and time as it is shown in Table 1.
 
-xxxxxxxxxxxx
-In our dataset we have a lot of missing values. Among the 90 lines of our dataset the pcv value is missing for 14 of them. The assumption we made saying that missing values are due to the death of the cow stands since values are mainly missing at time 3. Whenever the pcv values are missing for time 1, 2 and 3 it is because the cow supposedly died at a previous time 3 (for another infection of the parasite). 
-Once again the inefficiency of the low dose (relatively to the other doses) appears clearly since the cow seems to die more likely when treated with the low dose. In fact on 14 missing values 8 are missing for the low dose and only 3 for th emedium one. The remaining 3 are for time 1, 2 and 3 of the medium dose of cow 5 which died at time 3 of the low dose.
+```{r, results = 'asis'}
+a <- na.omit(cows)
+b <- 10 - table(a$dose, a$time)
+xtable(b, digits = 0, caption = "Number of missings in PCV for time and dose")
+```
+
+It seems to be a contradiction with the assumption that missings are randomly distributed. In the study all those missings will be removed and not further analyzed nor imputed.
+
+## Correlation structure
+
 
 
 # Results
