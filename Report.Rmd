@@ -21,44 +21,90 @@ cows$dose <- factor(cows$dose, levels = c("L", "M", "H"))
 ```
 
 
-# Abstract
-
 # Introduction
 
-TODO(All): Mix two intoduction
+Cattle are an important economic resource and also a major health factor in many countries. Therefore preventing diseases in a herd is vital. 
 
-The aim of this study is to assess the efficacy of different doses of Berenil in cattle infected with the trypanosomosis parasite. This disease, transmitted by the tsetse flies, causes an infection characterized by fever, loss of apetite and anaemia, which can lead to death depending on numerous factors such as the number of births or the innate resistance of the host. 
+In this study we focus our interest on the parasite of trypanosomosis which can lead to the death of a cow. This disease, transmitted by the tsetse flies, causes an infection characterized by fever, loss of apetite and anaemia, which can lead to death depending on different factors.
+
+One medicine, the Berenil, is used to cure the infected cattle. The aim of this research is to determine the efficiency of different doses of Berenil. Finding the most efficient dose, if such a dose exists, is critical when it comes to save both cattle and money. Here lies all the interest of our study. 
+
+To assess the severity of the disease, the Packed-Cell Volume (PCV) is shown to be a good indicator. The PCV is the percentage of red blood cells in blood. The lower the PCV is, the less healthy the cow is. 
+
+# Objective
+
+The aim of this study is to assess the efficacy of different doses of Berenil in cattle infected with the trypanosomosis parasite.
+
+# Dataset
+
+A cohort of 10 different cows infected by trypanosomosis parasite was selected for the study. Each of the Berenil doses (low, medium and high) was administrated three times (time 1, 2 or 3) for each animal. PCV was reported each time. 
+
+For each cow we also know the number of calves it had before being infected. Giving birth is supposed to weaken the cow, besides *nbirth* is also an indicator of how old the cow is.  
+ 
+
+* Id
+* PCV: 
+* Dose: 
+* Number of birth: 
+
+
+  Each cow in this dataset was treated three times, hence we will, at the beginning at least, consider that our dataset contains 30 different cows identified by id and dose. Later on this assumption will be released. The idea behind this differentiation within the same cow is due to the fact that a different Berenil dose was given for each infection. That is to say each cow has been infected three different times by the parasite. 
+  The missing values will not be thoroughly analysed in this study but we can still assume that they are due to the death of the corresponding cow. 
 
 
 A cohort of 10 different cows infected by trypanosomosis parasite was selected for the study. Each of the Berenil doses (low, medium and high) was administrated three times (time 1, 2 or 3) in each animal, and also a blood sample was taken at the moment of the administration. The blood samples were analyzed to obtain the packed cell volume (PCV), which measures the percentage of red blood cells in a (properly) centrifugated blood sample. Low counts of PCV is shown to be a good predictor of the presence and severity of the disease, in the absence of other factors that causing anaemia. Another reported covariate, which was suspected to be associated to the potential effect of the Berenil doses, was the number of births previous to the treatment administration.
 
-Introduction:
+# Data assumptions:
 
-  Cattle are an important economic resource and also a major health factor in many countries. Therefore preventing diseases in a herd is vital. 
-  In this study we focus our interest on the parasite of trypanosomosis which can lead to the death of a cow. One medicine, the Berenil, is used to cure the infected cattle. The aim of this research is to determine the efficiency of different doses of Berenil. Finding the most efficient dose, if such a dose exists, is critical when it comes to save both cattle and money. Here lies all the interest of our study. 
-  Is there a rank in the efficacy of Berenil doses?  In order to answer this question we will conduct a statistical analysis on a set of infected cows. After studying the data in a descriptive way we will perform a multivariate analysis in order to know the effect of each variable on the pcv value. Then the study of a linear mixed model will highlight the effect of each cow.
-  This statistical investigation will help us show the difference of efficiency between the different Berenil doses based on the characteristics of specific cows. 
- 
-Dataset:
+As the dataset...
 
- A cohort of 10 different cows infected by trypanosomosis parasite was selected for the study. Each of the Berenil doses (low, medium and high) was administrated three times (time 1, 2 or 3) for each animal. The response variable is pcv. It stands for Packed-Cell Volume which is an indicator of how sick is the cow. A low PCV value is said to be a good predictor of the presence and severity of the disease, hence the higher the pcv is, the healthier the cow is. This value is obtained before the treatment therefore in our dataset we only have access to the effect of the first two injections. For each cow we also know the number of calves it had before being infected. Giving birth is supposed to weaken the cow, besides *nbirth* is also an indicator of how old the cow is.  
-  Each cow in this dataset was treated three times, hence we will, at the beginning at least, consider that our dataset contains 30 different cows identified by id and dose. Later on this assumption will be released. The idea behind this differentiation within the same cow is due to the fact that a different Berenil dose was given for each infection. That is to say each cow has been infected three different times by the parasite. 
-	The missing values will not be thoroughly analysed in this study but we can still assume that they are due to the death of the corresponding cow. 
-
-Data assumptions:
-
+* This value is obtained before the treatment therefore in our dataset we only have access to the effect of the first two injections. 
 * At the first time pcv value is taken and then the dose is given.
 * Dose is assigned randomly in time to the cow.
 * The first treatment do not affect the next treatment in the cows.
 * Missings are complitely at random.
 
+# Statistical methods
+
+In this section the three models done in this report are explained.
+
+we will perform a multivariate analysis in order to know the effect of each variable on the pcv value. Then the study of a linear mixed model will highlight the effect of each cow.
+
+## Multivariate model
+
+Despite the fact of not being the optimal choice, a multivariate linear model was fitted to the data. It seems reasonable to think that observations are not independent, since they are comming from the same cow. However, this model could also led to some interesting results.
+
+The response variable was PCV since the severity the disease was evaluated by this parameter. As we wanted to estimate the effect of dose in diseased cows in time, these two variables were included in the model. 
+
+From this initial model, a forward stepwise method was carried for the model selection,  including additional covariates or interactions between them. The models were compared using F-test. This procedure was followed until no other covariates or interactions below 3rd order could be added, because they would not produce a significantly better model. Leading this to the most parsimonious model with all significant variables.
+
+A validation of the model was performed to check that the residuals were normal, homoscedastic and independent between them and to other rellevant covariates. 
+
+## Two-stage analysis
+
+A Two-stage analysis was performed to take into acount variability between subjects.
+
+In the first stage model, 3 linear regression models were done for each subject separately, one for each dose (High, Medium, Low).  The response variable  was PVC and time the covariate. 
+
+In the second stage model, a linear regression model was fitted for the subject-specific regression coefficients using dose as a covariate. It was also studied the cow effect or the number of births effect.
+
+## Random-effects model
+
+Since the Two Stage model didn't take into acount the within subjects variability, a Random-effects model was fitted. 
+
+It distinguishes the mean structure of the covariates as a fixed effect and also some variability between and within subjects as a random effects. It allows more flexibility to model.
+
+The methodology for model selection was the following as proposed by Verbeke and Molenberghs:
+
+1. Selection of a Preliminary Mean Structure
+2. Selection of a Preliminary Random-Effects Structure
+3. Selection of a Residual Covariance Structure
+4. Model Reduction
+
+A validation of the model was performed to check that the residuals were normal, homoscedastic and independent between them and to other rellevant covariates. 
+
+
 # Summary statistics
-
-TODO(Mathieu):
-
-Missing values:
-
-Describe missing values and get characteristics about data without missings and with missings.
 
 In this part the aim is to have some insights about our data. By performing a basic statistical analysis some relations between the explaining variables and the response one will emerge. This way we will have a first idea on how we can explain the response variable and also some answers when it comes to knowing the most efficient dose.  
 We will try so see the effect of each variable on the response variable in order to have ideas on the future results.
@@ -148,14 +194,12 @@ xxxxxxxxxxxx
 In our dataset we have a lot of missing values. Among the 90 lines of our dataset the pcv value is missing for 14 of them. The assumption we made saying that missing values are due to the death of the cow stands since values are mainly missing at time 3. Whenever the pcv values are missing for time 1, 2 and 3 it is because the cow supposedly died at a previous time 3 (for another infection of the parasite). 
 Once again the inefficiency of the low dose (relatively to the other doses) appears clearly since the cow seems to die more likely when treated with the low dose. In fact on 14 missing values 8 are missing for the low dose and only 3 for th emedium one. The remaining 3 are for time 1, 2 and 3 of the medium dose of cow 5 which died at time 3 of the low dose.
 
-# Statistical methods
 
-## Multivariate model
+# Explanatory and confirmatory results
 
 
-## Two-stage analysis
 
-In this section a Two-stage analysis is performed. In the first stage model, a linear regression model is done for each subject separately, being the response variable PVC and it evolves in time with ith cow under treatment jth. In the second stage model, a linear regression model is done for the subject-specific regression coefficients using known covariates.
+## Two stage 
 
 __Stage 1 Model__
 
@@ -179,23 +223,11 @@ Comments:
 * idDose 9L i 6L just one observation. No slope.
 * Results
 
-## Random-effects model
-
-In this section a Random-effects model is performed. The methodology that was carried was the proposed by Verbeke and Molenberghs in chapter 9 General Guidelines for Model Building:
-
-
-1. Selection of a Preliminary Mean Structure
-2. Selection of a Preliminary Random-Effects Structure
-3. Selection of a Residual Covariance Structure
-4. Model Reduction
-
-Our first model will include the dose.
-
+## Random effects
 
 
 $PCV_{i} = (\beta_{0} + b_{0i}) + (\beta_{1} + b_{1i})time + \beta_2 doseMedium + \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}$ and $\epsilon_{i} \sim N(0, \Sigma_ij)$
 
-# Explanatory and confirmatory results
 
 # Discussion
 
