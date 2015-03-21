@@ -99,26 +99,27 @@ A validation of the model was performed to check that the residuals were normal,
 
 In this part the aim is to have some insights about the data. By performing a basic statistical analysis some relations between the explaining variables and the response one would emerged. A first idea on how we can explain the response variable and also some answers when it comes to discovering the most efficient dose.
 
-```{r qplot, fig.cap = "PCV evolution for each cow on every dose. Cows are colored in the same fashion for each dose."}
-qplot(time, pcv, data = cows, group = id, geom = "line", facets = .~ dose, 
+```{r qplot, fig.cap = "PCV evolution for each cow on every dose. Cows are colored in the same fashion for each dose. \\label{fig:qplot}"}
+qplot(factor(time), pcv, data = cows, group = id, geom = "line", facets = .~ dose, 
       colour = factor(id)) + scale_color_discrete(guide = 'none')
 ```
 
 
-PCV values seem similar for each dose at time 1, which makes sense with several assumptions previously stated. Especially the fact that the PCV is taken before treatment. The unfinished evolutions in Figure X1 represent missing values in the data, more details about missing data are reported in the section (X 5.3). Notice that several cows with low PCV values in Low dose also have low PCV values in the other doses. 
+PCV values seem similar for each dose at time 1, which makes sense with several assumptions previously stated. Especially the fact that the PCV is taken before treatment. The unfinished evolutions in Figure \ref{fig:qplot} represent missing values in the data, more details about missing data are reported in the section \ref{sec:Missings}. Notice that several cows with low PCV values in Low dose also have low PCV values in the other doses. 
 
 Cows treated with high doses tend to have a better evoloution in their PCV values. One could also think that time has an influence on the PCV in the way that the effect of the second dose seems to be less important than the first one. 
 
 
-The mean influence of the covariate *time* is expected to be positive. Indeed one expects to higher PCV values after treatment. Also the High dose is expected to be more efficient than the Medium and Low one. This can be verified in Figure \ref{boxplot_time_dose}.
+The mean influence of the covariate *time* is expected to be positive. Indeed one expects to higher PCV values after treatment. Also the High dose is expected to be more efficient than the Medium and Low one. This can be verified in Figure \ref{fig:boxplot_time_dose}.
 
-```{r boxplot, fig.cap = "Boxplot of PCV values for each time and dose. \\label{boxplot_time_dose}"}
+```{r boxplot, fig.cap = "Boxplot of PCV values for each time and dose. \\label{fig:boxplot_time_dose}"}
 cows$timeDose <- paste(cows$time, cows$dose, sep = ".")
 cows$timeDose <- factor(cows$timeDose, levels = c("1.L", "2.L", "3.L", "1.M", "2.M", "3.M", "1.H", "2.H", "3.H"))
 ggplot(aes(timeDose, pcv, fill = dose), data = cows) + geom_boxplot()
+cows$timeDose <- NULL
 ```
 
-In Figure \ref{boxplot_time_dose} it can be apreciated that there is not a big difference between the low and the medium doses. However the High dose is much better than the others. For instance the mean PCV value at time 2 for the High dose is bigger than mean PCV value at time 3 for the Medium or Low dose.
+In Figure \ref{fig:boxplot_time_dose} it can be apreciated that there is not a big difference between the low and the medium doses. However the High dose is much better than the others. For instance the mean PCV value at time 2 for the High dose is bigger than mean PCV value at time 3 for the Medium or Low dose.
 
 ## Number of births
 
@@ -132,13 +133,14 @@ summary(lcowsnbirth)
 ```
 
 ## Missing data analysis
+\label{sec:Missings}
 
 There are 14 missing PCV values out of 90 observations in the dataset. Those missing values are equally distributed among doses and time as it is shown in Table 1.
 
 ```{r, results = 'asis'}
-a <- na.omit(cows)
-b <- 10 - table(a$dose, a$time)
-xtable(b, digits = 0, caption = "Number of missings in PCV for time and dose")
+cows.com <- na.omit(cows)
+missingsTable <- 10 - table(cows.com$dose, cows.com$time)
+xtable(missingsTable, digits = 0, caption = "Number of missings in PCV for time and dose")
 ```
 
 It seems to be a contradiction with the assumption that missings are randomly distributed. In the study all those missings will be removed and not further analyzed nor imputed.
