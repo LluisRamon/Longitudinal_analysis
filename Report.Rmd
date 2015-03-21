@@ -37,38 +37,26 @@ The aim of this study is to assess the efficacy of different doses of Berenil in
 
 # Dataset
 
-A cohort of 10 different cows infected by trypanosomosis parasite was selected for the study. Each of the Berenil doses (low, medium and high) was administrated three times (time 1, 2 or 3) for each animal. PCV was reported each time. 
+A cohort of 10 different cows infected by trypanosomosis parasite was selected for the study. Each  Berenil dose (low, medium and high) was administrated three times (time 1, 2 or 3) for each animal. PCV was reported each time as well as the number of calves it had before being infected.
 
-For each cow we also know the number of calves it had before being infected. Giving birth is supposed to weaken the cow, besides *nbirth* is also an indicator of how old the cow is.  
- 
+The variables reported for this study are presented below.
 
-* Id
-* PCV: 
-* Dose: 
-* Number of birth: 
+* Id: Each cow has its own id. From 1 to 10. _(id)_
+* PCV: From 14.30 to 33.30. _(pcv)_
+* Dose: H High, M Medium L low. _(dose)_
+* Time: From 1 to 3. _(time)_
+* Number of birth: From 2 to 8. _(nbirth)_
 
+Since the gathering process of the data was unkonw, several assumptions were needed.
 
-  Each cow in this dataset was treated three times, hence we will, at the beginning at least, consider that our dataset contains 30 different cows identified by id and dose. Later on this assumption will be released. The idea behind this differentiation within the same cow is due to the fact that a different Berenil dose was given for each infection. That is to say each cow has been infected three different times by the parasite. 
-  The missing values will not be thoroughly analysed in this study but we can still assume that they are due to the death of the corresponding cow. 
-
-
-A cohort of 10 different cows infected by trypanosomosis parasite was selected for the study. Each of the Berenil doses (low, medium and high) was administrated three times (time 1, 2 or 3) in each animal, and also a blood sample was taken at the moment of the administration. The blood samples were analyzed to obtain the packed cell volume (PCV), which measures the percentage of red blood cells in a (properly) centrifugated blood sample. Low counts of PCV is shown to be a good predictor of the presence and severity of the disease, in the absence of other factors that causing anaemia. Another reported covariate, which was suspected to be associated to the potential effect of the Berenil doses, was the number of births previous to the treatment administration.
-
-# Data assumptions:
-
-As the dataset...
-
-* This value is obtained before the treatment therefore in our dataset we only have access to the effect of the first two injections. 
-* At the first time pcv value is taken and then the dose is given.
+* Each time PCV is obtained before the treatment. Therefore the effect of the third dose could not be evaluated.
 * Dose is assigned randomly in time to the cow.
-* The first treatment do not affect the next treatment in the cows.
+* For a given cow, the previous treatments (high, medium or low) do not affect the following ones.
 * Missings are complitely at random.
 
 # Statistical methods
 
-In this section the three models done in this report are explained.
-
-we will perform a multivariate analysis in order to know the effect of each variable on the pcv value. Then the study of a linear mixed model will highlight the effect of each cow.
+The methods used in the statistical analyses are detailled in this section. First a multivariate model was fitted, then a two stage analysis and finally a random effect model. An exploratory data analysis was performed before those regression methods.
 
 ## Multivariate model
 
@@ -195,9 +183,11 @@ In our dataset we have a lot of missing values. Among the 90 lines of our datase
 Once again the inefficiency of the low dose (relatively to the other doses) appears clearly since the cow seems to die more likely when treated with the low dose. In fact on 14 missing values 8 are missing for the low dose and only 3 for th emedium one. The remaining 3 are for time 1, 2 and 3 of the medium dose of cow 5 which died at time 3 of the low dose.
 
 
-# Explanatory and confirmatory results
+# Results
 
+Each cow in this dataset was treated three times, hence we will, at the beginning at least, consider that our dataset contains 30 different cows identified by id and dose. Later on this assumption will be released. The idea behind this differentiation within the same cow is due to the fact that a different Berenil dose was given for each infection. That is to say each cow has been infected three different times by the parasite.
 
+## Multivariate model
 
 ## Two stage 
 
@@ -230,6 +220,8 @@ $PCV_{i} = (\beta_{0} + b_{0i}) + (\beta_{1} + b_{1i})time + \beta_2 doseMedium 
 
 
 # Discussion
+
+Giving birth is supposed to weaken the cow, besides *nbirth* is also an indicator of how old the cow is.
 
 # Bibliography
 
