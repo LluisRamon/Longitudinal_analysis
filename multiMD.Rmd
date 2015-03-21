@@ -2,7 +2,9 @@
 title: "Untitled"
 author: "Gerard Castell i Joan Valls"
 date: "Friday, March 20, 2015"
-output: pdf_document
+output:
+  pdf_document:
+    fig_caption: yes
 ---
 
 ## Multivariate model
@@ -15,9 +17,42 @@ $$
 PCV= 15.82 + 2.43X_{time} -0.32X_{doseM} -1.31X_{doseH} -0.34X_{nbirth} + 0.48X_{doseM}X_{time} + 2.35X_{doseH}X_{time}
 $$
 
-
-
 ```{r, echo=FALSE, results='hide'}
+round.pval <- function(pval=stop("p-value not given"), show.sig.stars=FALSE, alpha=0.05){
+  
+	arrodonir <- function(pval, show.sig.stars, alpha){
+		
+		if(is.na(pval)) return(NA)
+
+		ndec <- nchar(as.character(signif(alpha,1)))-2
+		pval2 <- if(pval >= alpha) round(pval, ndec) else signif(pval, 1)
+
+		i <- 1
+		while(pval2==signif(alpha, i)){
+			pval2 <- round(pval, ndec+i)
+			if(pval2==pval) break
+			i <- i+1
+		}
+		pval2 <- format(pval2, scientific=F)
+		if(pval<0.00001){
+			pval2 <- "<0.00001"
+		}
+		
+		if(show.sig.stars){
+			cpoints <- c(0, alpha/50, alpha/5, alpha, ceil(alpha*10^(ndec-1))/10^(ndec)+alpha, 1)
+			c(0, 0.001, 0.01, 0.05, 0.1, 1)
+			pval2 <- paste(pval2, symnum(pval, corr = FALSE, na = FALSE, cutpoints = cpoints, symbols = c("***", "**", "*", ".", " ")))
+		}
+
+		return(pval2)
+	}
+
+	ret <- sapply(pval, function(x) arrodonir(x, show.sig.stars=show.sig.stars, alpha=alpha))
+	if(is.matrix(pval)) ret <- matrix(ret, ncol=ncol(pval))
+	return(ret)
+
+}
+
 cows <- read.table("data/cattle_mes dades.txt", header = TRUE, 
                    sep = "\t", dec = ",", na.strings = "")
 
@@ -39,23 +74,23 @@ cows$dose <- factor(cows$dose, levels=c("L", "M", "H"))
 # id: we dont want the effect of the dose to be explained by the cow.
 
 # Each observation of each cow will be considered independent.
-taula <- matrix(ncol=6, nrow=33)
+taula <- matrix(ncol=6, nrow=19)
 model <- lm(pcv ~ time + dose, data=cows)
 summary(model)
 model0 <- model
 colnames(taula) <- c("Formula", "Variables", colnames(summary(model)$coef))
 as.character(model$terms)->formu
 taula[1,1] <- paste(formu[c(2,1,3)], collapse="")
-taula[1:4,-(1:2)] <-  round(summary(model)$coef,4)
+taula[1:4,-(1:2)] <-  summary(model)$coef
 taula[1:4,2] <- rownames(summary(model)$coef)
 
-model <- lm(pcv ~ time + dose + nbirth, data=cows)
+model <- lm(pcv ~ time*dose, data=cows)
 summary(model)
 model1 <- model
 as.character(model$terms)->formu
 taula[6,1] <- paste(formu[c(2,1,3)], collapse="")
-taula[6:10,-(1:2)] <-  round(summary(model)$coef,4)
-taula[6:10,2] <- rownames(summary(model)$coef)
+taula[6:11,-(1:2)] <-  summary(model)$coef
+taula[6:11,2] <- rownames(summary(model)$coef)
 # dose H has a huge effect, in a possitive way. Also, in general higher
 # times give better PCV values (which is logical). nbirth has a significative
 # negative effect on the PCV.
@@ -64,9 +99,9 @@ model <- lm(pcv ~ time*dose + nbirth, data=cows)
 summary(model)
 model2 <- model
 as.character(model$terms)->formu
-taula[12,1] <- paste(formu[c(2,1,3)], collapse="")
-taula[12:18,-(1:2)] <-  round(summary(model)$coef,4)
-taula[12:18,2] <- rownames(summary(model)$coef)
+taula[13,1] <- paste(formu[c(2,1,3)], collapse="")
+taula[13:19,-(1:2)] <-  summary(model)$coef
+taula[13:19,2] <- rownames(summary(model)$coef)
 # time and dose almost interact for high doses. This interaction is synergistic.
 # higher times and dose H give even higher pcv, but this effect is higher when 
 # combined together.
@@ -74,38 +109,20 @@ taula[12:18,2] <- rownames(summary(model)$coef)
 model <- lm(pcv ~ dose + time*nbirth, data=cows)
 summary(model)
 as.character(model$terms)->formu
-taula[20,1] <- paste(formu[c(2,1,3)], collapse="")
-taula[20:25,-(1:2)] <-  round(summary(model)$coef,4)
-taula[20:25,2] <- rownames(summary(model)$coef)
 model <- lm(pcv ~ time + dose*nbirth, data=cows)
 summary(model)
-as.character(model$terms)->formu
-taula[27,1] <- paste(formu[c(2,1,3)], collapse="")
-taula[27:33,-(1:2)] <- round(summary(model)$coef,4)
-taula[27:33,2] <- rownames(summary(model)$coef)
 # no other interactions are significative.
+taula[,6] <- round.pval(as.numeric(taula[,6]))
+taula[,3:5] <- round(as.numeric(taula[,3:5]), 2) 
 # print(xtable(taula, digits=c(0,0,0,2,2,2,2)), include.rownames=F)
 # so... model selection, for the more pasimonious model says...
 add1(model0, scope=~.^2+nbirth, test="F")
-add1(model1, scope=~.^2, test="F")
+add1(update(model0,~.^2), scope=~.+nbirth, test="F")
 add1(model2, scope=~.^2, test="F")
 
 ## final model:
 model2 <- lm(pcv ~ time*dose + nbirth, data=cows, y=T, model=T)
 summary(model2)
-
-## diagnostic:
-
-# high pcv has high positive errors. Doesnt seem to be random.
-plot(model2$residuals, model2$y)
-# problems with doseH
-plot(model2$model$dose, model2$residuals)
-# NO homoscedasticity
-plot(model2$model$time, model2$residuals)
-# not centered
-plot(model2$model$nbirth, model2$residuals)
-
-## BAD MODEL: we already know that, since obervations are not independent.
 ```
 
 \begin{table}[ht]
@@ -115,42 +132,47 @@ plot(model2$model$nbirth, model2$residuals)
 \hline
 Formula & Variables & Estimate & Std. Error & t value & Pr($>$$|$t$|$) \\ 
   \hline
-pcv\~{}time + dose & (Intercept) & 12.3248 & 0.834 & 14.7788 & 0 \\ 
-   & time & 3.5488 & 0.3686 & 9.6281 & 0 \\ 
-   & doseM & 0.5629 & 0.7477 & 0.7528 & 0.454 \\ 
-   & doseH & 3.2009 & 0.7163 & 4.4688 & 0 \\ 
+pcv\~{}time + dose & (Intercept) & 12.32 & 0.83 & 14.78 & $<$0.00001 \\ 
+   & time & 3.55 & 0.37 & 9.63 & $<$0.00001 \\ 
+   & doseM & 0.56 & 0.75 & 0.75 & 0.45 \\ 
+   & doseH & 3.2 & 0.72 & 4.47 & 0.00003 \\ 
    &  &  &  &  &  \\ 
-  pcv\~{}time + dose + nbirth & (Intercept) & 13.9405 & 1.0288 & 13.5508 & 0 \\ 
-   & time & 3.5807 & 0.3558 & 10.0628 & 0 \\ 
-   & doseM & 0.4042 & 0.7241 & 0.5582 & 0.5785 \\ 
-   & doseH & 3.0766 & 0.6928 & 4.4407 & 0 \\ 
-   & nbirth & -0.3534 & 0.1402 & -2.5203 & 0.014 \\ 
+  pcv\~{}time * dose & (Intercept) & 14.51 & 1.29 & 11.28 & $<$0.00001 \\ 
+   & time & 2.28 & 0.68 & 3.34 & 0.001 \\ 
+   & doseM & -0.47 & 1.81 & -0.26 & 0.79 \\ 
+   & doseH & -1.45 & 1.73 & -0.84 & 0.41 \\ 
+   & time:doseM & 0.65 & 0.93 & 0.7 & 0.48 \\ 
+   & time:doseH & 2.5 & 0.87 & 2.87 & 0.005 \\ 
    &  &  &  &  &  \\ 
-  pcv\~{}time * dose + nbirth & (Intercept) & 15.8457 & 1.3496 & 11.7408 & 0 \\ 
-   & time & 2.4286 & 0.6613 & 3.6725 & 5e-04 \\ 
-   & doseM & -0.3189 & 1.748 & -0.1824 & 0.8558 \\ 
-   & doseH & -1.3061 & 1.6714 & -0.7814 & 0.4372 \\ 
-   & nbirth & -0.3355 & 0.1337 & -2.5092 & 0.0145 \\ 
-   & time:doseM & 0.4806 & 0.8975 & 0.5355 & 0.594 \\ 
-   & time:doseH & 2.3514 & 0.84 & 2.7993 & 0.0066 \\ 
-   &  &  &  &  &  \\ 
-  pcv\~{}dose + time * nbirth & (Intercept) & 13.7005 & 1.7826 & 7.6857 & 0 \\ 
-   & doseM & 0.3971 & 0.7304 & 0.5436 & 0.5884 \\ 
-   & doseH & 3.0706 & 0.6986 & 4.3956 & 0 \\ 
-   & time & 3.7107 & 0.8637 & 4.2961 & 1e-04 \\ 
-   & nbirth & -0.2983 & 0.362 & -0.8238 & 0.4128 \\ 
-   & time:nbirth & -0.0292 & 0.1763 & -0.1655 & 0.869 \\ 
-   &  &  &  &  &  \\ 
-  pcv\~{}time + dose * nbirth & (Intercept) & 13.1703 & 1.5061 & 8.7446 & 0 \\ 
-   & time & 3.5643 & 0.358 & 9.9571 & 0 \\ 
-   & doseM & 0.6816 & 1.8149 & 0.3756 & 0.7084 \\ 
-   & doseH & 4.8865 & 1.8079 & 2.7029 & 0.0086 \\ 
-   & nbirth & -0.1845 & 0.2808 & -0.6572 & 0.5132 \\ 
-   & doseM:nbirth & -0.0469 & 0.3645 & -0.1288 & 0.8979 \\ 
-   & doseH:nbirth & -0.3978 & 0.3615 & -1.1004 & 0.275 \\ 
+  pcv\~{}time * dose + nbirth & (Intercept) & 15.85 & 1.35 & 11.74 & $<$0.00001 \\ 
+   & time & 2.43 & 0.66 & 3.67 & 0.0005 \\ 
+   & doseM & -0.32 & 1.75 & -0.18 & 0.86 \\ 
+   & doseH & -1.31 & 1.67 & -0.78 & 0.44 \\ 
+   & nbirth & -0.34 & 0.13 & -2.51 & 0.01 \\ 
+   & time:doseM & 0.48 & 0.9 & 0.54 & 0.59 \\ 
+   & time:doseH & 2.35 & 0.84 & 2.8 & 0.007 \\ 
    \hline
 \end{tabular}
-\caption{All multivariant models considered for fitting the data, using a forward stepwise for selecting the model.}
+\caption{All multivariant models considered for fitting the data that were significantly different, using F-tests to assess this difference.}
 \label{taulamodels}
 
 \end{table}
+
+No more variables were added because the resulting model was not significantly different from the chosen one and were less parimonious. The analyses of the residuals of the model can be seen in Figure \ref{resplots}. Clearly, they present some issues: residuals are not independent from PCV, are not centered for high dose, no homoscedasticity, etc. So even thought this is not the optimal model to fit the data (and this is also shown in the residuals plots), the model is pointing in a pretty obvious way that the high dose is the only one that an effect significantly different from low dose. One of the problems with the data is that there are no controls among the cows so, the effect of the doses cannot be compared with PCV without the treatment. We are suposing that any of the treatments won't go worse than not giving a treatment, and that the higher the dose the bigger the effect. The interaction between time and dose is also pointing that the effect of the high dose is higher as time passes (synergistic), even when adjusting for the number of births.
+
+
+```{r, echo=FALSE, fig.cap='Analyses of the residuals of the model.\\label{resplots}'}
+## diagnostic:
+par(mfrow=c(2,2), mar=c(4,4,2,2), cex=0.6)
+# high pcv has high positive errors. Doesnt seem to be random.
+plot(model2$residuals, model2$y, xlab="residuals", ylab="PCV")
+# problems with doseH
+plot(model2$model$dose, model2$residuals, ylab="residuals", xlab="Dose")
+# NO homoscedasticity
+plot(model2$model$time, model2$residuals, ylab="residuals", xlab="Time")
+# not centered
+plot(model2$model$nbirth, model2$residuals, ylab="residuals", xlab="Number of births (nbirth)")
+
+## BAD MODEL: we already know that, since obervations are not independent.
+```
+
