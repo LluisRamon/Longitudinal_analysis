@@ -148,13 +148,12 @@ xxxxxxxxxxxx
 In our dataset we have a lot of missing values. Among the 90 lines of our dataset the pcv value is missing for 14 of them. The assumption we made saying that missing values are due to the death of the cow stands since values are mainly missing at time 3. Whenever the pcv values are missing for time 1, 2 and 3 it is because the cow supposedly died at a previous time 3 (for another infection of the parasite). 
 Once again the inefficiency of the low dose (relatively to the other doses) appears clearly since the cow seems to die more likely when treated with the low dose. In fact on 14 missing values 8 are missing for the low dose and only 3 for th emedium one. The remaining 3 are for time 1, 2 and 3 of the medium dose of cow 5 which died at time 3 of the low dose.
 
-# Multivariate model
+# Statistical methods
 
-TODO(Gerard):
+## Multivariate model
 
-# Two-stage analysis
 
-TODO(Lluís):
+## Two-stage analysis
 
 In this section a Two-stage analysis is performed. In the first stage model, a linear regression model is done for each subject separately, being the response variable PVC and it evolves in time with ith cow under treatment jth. In the second stage model, a linear regression model is done for the subject-specific regression coefficients using known covariates.
 
@@ -180,13 +179,15 @@ Comments:
 * idDose 9L i 6L just one observation. No slope.
 * Results
 
-# Random-effects model
+## Random-effects model
 
-In this section a Random-effects model is performed. The methodology that is taken
+In this section a Random-effects model is performed. The methodology that was carried was the proposed by Verbeke and Molenberghs in chapter 9 General Guidelines for Model Building:
 
-1. Model for the fixed effects
-2. Include a Random effect
-3. Add a correlation structure
+
+1. Selection of a Preliminary Mean Structure
+2. Selection of a Preliminary Random-Effects Structure
+3. Selection of a Residual Covariance Structure
+4. Model Reduction
 
 Our first model will include the dose.
 
@@ -194,9 +195,12 @@ Our first model will include the dose.
 
 $PCV_{i} = (\beta_{0} + b_{0i}) + (\beta_{1} + b_{1i})time + \beta_2 doseMedium + \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}$ and $\epsilon_{i} \sim N(0, \Sigma_ij)$
 
+# Explanatory and confirmatory results
 
+# Discussion
 
 # Bibliography
 
 * [Bovine trypanosomiasis in south-western Uganda: packed-cell volumes and prevalences of infection in the cattle.](http://www.ncbi.nlm.nih.gov/pubmed/15000727)
 * [Evaluating the use of packed cell volume as an indicator of trypanosomal infections in cattle in eastern Zambia](http://www.sciencedirect.com/science/article/pii/S0167587708001098#)
+* [Linear Mixed Models for Longitudinal Data](http://www.springer.com/gp/book/9781441902993)
