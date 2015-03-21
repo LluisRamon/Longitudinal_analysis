@@ -52,30 +52,32 @@ plot(cows$dose, cows$residual)
 
 cows$residual <- NULL
 
-# Covariance and Correlation Structure
+
+# Covariance and Correlation Structure ------------------------------------
+
 cor(cows[, 3:5], use = "complete.obs")
 
-library(tidyr)
+library("tidyr")
 cows.w <- spread(cows, time, pcv)
-cor(cows.w[, c("1", "2", "3")], use = "complete.obs")
+cor(cows.w[, c("1", "2", "3")], use = "pairwise.complete.obs")
 # Correlation for each dose
 
 cond <- cows.w$dose == "L"
-cor(cows.w[cond, c("1", "2", "3")], use = "complete.obs")
-# A lot of missing values
+cor(cows.w[cond, c("1", "2", "3")], use = "pairwise.complete.obs")
+# A lot of missing values in the data
 
 cond <- cows.w$dose == "M"
-cor(cows.w[cond, c("1", "2", "3")], use = "complete.obs")
+cor(cows.w[cond, c("1", "2", "3")], use = "pairwise.complete.obs")
 
 cond <- cows.w$dose == "H"
-cor(cows.w[cond, c("1", "2", "3")], use = "complete.obs")
-# No missing values
+cor(cows.w[cond, c("1", "2", "3")], use = "pairwise.complete.obs")
+# No missing values in the data
 
 # Two step modeling -------------------------------------------------------
 
-library(nlme)  # mainly for graphs
+library("nlme") 
 # version 3.1-120 is required
-library(dplyr)
+library("dplyr")
 
 cows.com <- cows[complete.cases(cows), ]
 cows.com$idDose <- paste(cows.com$id, cows.com$dose, sep = "_")
@@ -122,61 +124,51 @@ lm(slope ~ Intercept, bdd)
 
 # Linear mixed model ------------------------------------------------------
 
-library(lattice)
-library(lme4)
+library("lattice")
+library("lme4")
 
-cows.gd.lme <- lmer(pcv ~ time + dose + (time | idDose), data = cows.com)
-cows.gd.lme0 <- lmer(pcv ~ time + dose + (0 + time | idDose), data = cows.com)
-cows.gd.lme1 <- lmer(pcv ~ time + dose + nbirth + (time | idDose), data = cows.com)
-cows.gd.lme10 <- lmer(pcv ~ time + dose + nbirth + (0 + time | idDose), data = cows.com)
+cows.lme <- lmer(pcv ~ time + dose + (time | idDose), data = cows.com)
+cows.lme0 <- lmer(pcv ~ time + dose + (0 + time | idDose), data = cows.com)
+cows.lme1 <- lmer(pcv ~ time + dose + nbirth + (time | idDose), data = cows.com)
+cows.lme10 <- lmer(pcv ~ time + dose + nbirth + (0 + time | idDose), data = cows.com)
 
 
 xyplot(pcv ~ time | idDose, data = cows.com, type = "l")
 
-summary(cows.gd.lme)
-summary(cows.gd.lme0)
-summary(cows.gd.lme1)
-summary(cows.gd.lme10)
-# correlation -1 issues
-# https://stat.ethz.ch/pipermail/r-sig-mixed-models/2010q1/003519.html
-# lRT ~ couleurs + (1 + couleurs | nom)
-# IRT ~ couleurs + (1|nom:couleurs) + (1|nom)
+summary(cows.lme)
+summary(cows.lme0)
+summary(cows.lme1)
+summary(cows.lme10)
 
-anova(cows.gd.lme, cows.gd.lme0)
-anova(cows.gd.lme0, cows.gd.lme1)
-anova(cows.gd.lme1, cows.gd.lme10)
+
+anova(cows.lme, cows.lme0)
+anova(cows.lme0, cows.lme1)
+anova(cows.lme1, cows.lme10)
 
 # This model looks to be better
-cows.gd.lme10
+cows.lme10
 
-residus <- residuals(cows.gd.lme10)
+residus <- residuals(cows.lme10)
 
 plot(residus)
 hist(residus)
 
-plot(cows.gd.lme10)
-plot(cows.gd.lme10, dose ~ resid(., scaled=TRUE))
-VarCorr(cows.gd.lme10)
+plot(cows.lme10)
+plot(cows.lme10, dose ~ resid(., scaled=TRUE))
+VarCorr(cows.lme10)
 
-intervals(cows.gd.lme10)
-qqnorm(cows.gd.lme10)
-
-
-ranef(cows.gd.lme10)
-pr1 <- profile(cows.gd.lme10)
+# Interesting functions
+ranef(cows.lme10)
+pr1 <- profile(cows.lme10)
 confint(pr1)
-splom(pr1)
-dotplot(ranef(cows.gd.lme, condVar = TRUE))
-dotplot(ranef(cows.gd.lme))
-qqmath(ranef(cows.gd.lme, condVar = TRUE))
+dotplot(ranef(cows.lme, condVar = TRUE))
+dotplot(ranef(cows.lme))
+qqmath(ranef(cows.lme, condVar = TRUE))
 
-# Models with lme for including correlation structure
+# Models with lme for including correlation structure ---------------------
 
 cows.gd <- groupedData(pcv ~ time|idDose, data = cows.com, 
                        outer = ~dose, inner = ~nbirth)
-
-cows.gd <- groupedData(pcv ~ time|idDose, data = cows.com, 
-                       inner = ~nbirth) 
 
 mod1 <- lme(pcv ~ time + dose, data = cows.gd)
 mod1 <- lme(pcv ~ time + dose, random = ~1|idDose, data = cows.gd)
@@ -190,9 +182,10 @@ mod1 <- lme(pcv ~ time + dose, random = ~1|id/dose, data = cows.com)
 
 summary(mod1)
 
-
 mod1 <- lme(pcv ~ time + dose, random = ~time -1|idDose, 
             correlation = corAR1(0.5), data = cows.gd)
 mod1 <- lme(pcv ~ time + dose, random = ~time -1|idDose, 
             correlation = corAR1(form = ~1|idDose), data = cows.gd)
+mod1 <- lme(pcv ~ time + dose, random = ~time -1|idDose, 
+            correlation = corARMA(p = 2), data = cows.gd)
 summary(mod1)
