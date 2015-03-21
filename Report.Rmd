@@ -143,6 +143,12 @@ It seems to be a contradiction with the assumption that missings are randomly di
 
 ## Correlation structure
 
+```{r}
+library("corrplot")
+library("tidyr")
+cows.w <- spread(cows, time, pcv)
+corrplot(cor(cows.w[, c("1", "2", "3")], use = "pairwise.complete.obs"), "ellipse")
+```
 
 
 # Results
@@ -178,12 +184,16 @@ Comments:
 ## Random effects
 
 
+
 $PCV_{i} = (\beta_{0} + b_{0i}) + (\beta_{1} + b_{1i})time + \beta_2 doseMedium + \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}$ and $\epsilon_{i} \sim N(0, \Sigma_ij)$
 
 
 # Discussion
 
 Giving birth is supposed to weaken the cow, besides *nbirth* is also an indicator of how old the cow is.
+
+
+# Limitations and Further research
 
 # Bibliography
 
