@@ -8,6 +8,13 @@ cows$dose <- factor(cows$dose, levels = c("L", "M", "H"))
 str(cows)
 head(cows)
 
+library("nlme") 
+# version 3.1-120 is required
+library("dplyr")
+
+cows.com <- cows[complete.cases(cows), ]
+cows.com$idDose <- paste(cows.com$id, cows.com$dose, sep = "_")
+
 # Summary statistics ------------------------------------------------------
 
 summary(cows)
@@ -75,13 +82,6 @@ cor(cows.w[cond, c("1", "2", "3")], use = "pairwise.complete.obs")
 
 # Two step modeling -------------------------------------------------------
 
-library("nlme") 
-# version 3.1-120 is required
-library("dplyr")
-
-cows.com <- cows[complete.cases(cows), ]
-cows.com$idDose <- paste(cows.com$id, cows.com$dose, sep = "_")
-
 cows.gd <- groupedData(pcv ~ time|idDose, data = cows.com, 
                        outer = ~dose, inner = ~nbirth) 
 
@@ -127,6 +127,11 @@ lm(slope ~ Intercept, bdd)
 library("lattice")
 library("lme4")
 
+cows.gls <- lm(pcv ~ time + dose, data = cows.com, method="REML")
+cows.lme <- lmer(pcv ~ time + dose + (1 | idDose), data = cows.com)
+
+anova(cows.gls, cows.lme)
+
 cows.lme <- lmer(pcv ~ time + dose + (time | idDose), data = cows.com)
 cows.lme0 <- lmer(pcv ~ time + dose + (0 + time | idDose), data = cows.com)
 cows.lme1 <- lmer(pcv ~ time + dose + nbirth + (time | idDose), data = cows.com)
@@ -170,8 +175,46 @@ qqmath(ranef(cows.lme, condVar = TRUE))
 cows.gd <- groupedData(pcv ~ time|idDose, data = cows.com, 
                        outer = ~dose, inner = ~nbirth)
 
+# Fixed effect
+cows.gls <- gls(pcv ~ time + dose, data = cows.com, method="REML")
+
+# Random effect
+cows.lme.Inte <- lme(pcv ~ time + dose, random = ~1|idDose, data = cows.gd)
+cows.lme.Slop <- lme(pcv ~ time + dose, random = ~0 + time|idDose, data = cows.gd)
+
+anova(cows.gls, cows.lme.Inte)
+anova(cows.gls, cows.lme.Slop)
+
+AIC(cows.lme.Inte)
+AIC(cows.lme.Slop)
+
+cows.lme <- lme(pcv ~ time + dose, random = ~time|idDose, data = cows.gd) 
+# Crashes. With lmer we see a correlation of -1, so with just one random effect is enogh
+
+# Add nbirth fixed effect 
+
+cows.lme.Slop <- lme(pcv ~ time + dose, random = ~0 + time|idDose, data = cows.gd, method = "ML")
+cows.lme.Slop.birth <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|idDose, data = cows.gd, method = "ML")
+
+anova(cows.lme.Slop, cows.lme.Slop.birth)
+
+# Random effect with nbirth
+
+cows.lme.Slop.birth <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|idDose, data = cows.gd)
+cows.lme.Slop.birth <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|id/dose, data = cows.gd)
+cows.lme.Slop.birthR <- lme(pcv ~ time + dose + nbirth, random = ~0 + time + nbirth|idDose, 
+                           data = cows.gd)
+
+anova(cows.lme.Slop.birth, cows.lme.Slop.birthR)
+
+summary(cows.lme.Slop.birth)
+
+cows.lme.Slop.birthInt <- lme(pcv ~ time*dose - dose + nbirth, random = ~0 + time|idDose, data = cows.gd)
+
+summary(cows.lme.Slop.birthInt)
+
 mod1 <- lme(pcv ~ time + dose, data = cows.gd)
-mod1 <- lme(pcv ~ time + dose, random = ~1|idDose, data = cows.gd)
+
 # mod1 <- lme(pcv ~ time + dose, random = ~time|idDose, data = cows.gd) 
 # Convergence problems. Seen in previous models correlation -1 between random effects
 mod1 <- lme(pcv ~ time + dose, random = ~time -1|idDose, data = cows.gd)
