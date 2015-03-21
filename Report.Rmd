@@ -113,7 +113,9 @@ Cows treated with high doses tend to have a better evoloution in their PCV value
 The mean influence of the covariate *time* is expected to be positive. Indeed one expects to higher PCV values after treatment. Also the High dose is expected to be more efficient than the Medium and Low one. This can be verified in Figure \ref{boxplot_time_dose}.
 
 ```{r boxplot, fig.cap = "Boxplot of PCV values for each time and dose. \\label{boxplot_time_dose}"}
-boxplot(pcv ~  time + dose, data = cows)
+cows$timeDose <- paste(cows$time, cows$dose, sep = ".")
+cows$timeDose <- factor(cows$timeDose, levels = c("1.L", "2.L", "3.L", "1.M", "2.M", "3.M", "1.H", "2.H", "3.H"))
+ggplot(aes(timeDose, pcv, fill = dose), data = cows) + geom_boxplot()
 ```
 
 In Figure \ref{boxplot_time_dose} it can be apreciated that there is not a big difference between the low and the medium doses. However the High dose is much better than the others. For instance the mean PCV value at time 2 for the High dose is bigger than mean PCV value at time 3 for the Medium or Low dose.
