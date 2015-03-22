@@ -354,9 +354,7 @@ plot(model2$model$nbirth, model2$residuals, ylab="residuals", xlab="Number of bi
 
 In this section a Two stage is performed, where a linear regression is done for each cow in the firs stage. Then, with the coefficients a second regression is done for the intercept and the slope conditioning on dose.
 
-Several issues emerge with the missing values. As it was specified in missing data analysis section, there are several cows that have just pcv value at time 1, so it could not be possible to generate slope. For example cows number 6 and 9 treated with low dose.
-
-
+Several issues emerge with the missing values. As it was specified in missing data analysis section, there are several cows that have just pcv value at time 1, so it could not be possible to generate slope. For example cows number 6 and 9 treated with low dose. 
 
 __Stage 1 Model__
 
@@ -390,7 +388,7 @@ modbeta1 <- lm(slope ~ dose, bdd)
 # summary(modbeta1)
 ```
 
-Comparing Figure \ref{fig:qplot} with Figure \ref{fig:two_stage_graph} it can be seen that the information from de first plot has been condesed to a line.
+At Figure \ref{fig:two_stage_graph} it is shown all the linear regressions done at the first stage analysis. The slopes are positive for each dose but bigger for high dose treatment. Comparing this Figure with Figure \ref{fig:qplot} it can be seen that the information much variability is lost and the the data is reduced.
 
 ```{r two_stage_graph, fig.cap = "Each line represents the linear model fited for each cow and dose.\\label{fig:two_stage_graph}"}
 # Graph option 1
