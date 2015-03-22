@@ -183,11 +183,7 @@ where $b_i \sim N(0, D)$
 cows.com$idDose <- paste(cows.com$id, cows.com$dose, sep = "_")
 cows.gd <- groupedData(pcv ~ time|idDose, data = cows.com, 
                        outer = ~dose, inner = ~nbirth)
-plot(cows.gd)
-```
 
-
-```{r}
 cows.lmList <- nlme:::lmList(pcv ~ time, cows.gd)
 betas <- as.data.frame(coef(cows.lmList))
 names(betas) <- c("Intercept", "slope")
@@ -198,16 +194,57 @@ bdd <- left_join(betas, betas.info)
 
 modbeta0 <- lm(Intercept ~ dose, bdd)
 modbeta1 <- lm(slope ~ dose, bdd)
-summary(modbeta0)
-summary(modbeta1)
+# summary(modbeta0)
+# summary(modbeta1)
 ```
 
+Comparing Figure \ref{fig:qplot} with Figure \ref{fig:two_stage_graph} it can be seen that the information from de first plot has been condesed to a line.
+
+```{r two_stage_graph, fig.cap = "Each line represents the linear model fited for each cow and dose.\\label{fig:two_stage_graph}"}
+# Graph option 1
+# q <- qplot(factor(time), pcv, group = id, data = cows.com, geom = c("point", "line")) + facet_grid(dose ~ id)
+# q + geom_abline(aes(intercept = Intercept, slope = slope), colour = "red", data = bdd, alpha = 0.8)
+
+# Graph option 2
+q <- qplot(factor(time), pcv, group = id, data = cows.com, geom = "point") + facet_grid(.~ dose)
+q + geom_abline(aes(intercept = Intercept, slope = slope, colour = factor(dose)), data = bdd)
+```
+
+Parameter estimates for $\beta_{0ij}$ are included in Table \label{tab::Two_stage_intercept} with it corresponding p-value. The intercept (15.1300) represents the mean PCV value at time 1 for a cow treated with low dose, as it is the reference treatment. The parameter estimate for medium dose is not significant.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lll}
+
+\hline
+Parameters            & Estimate (p-value)       \\ 
+\hline
+$\beta_{0}$ (Intercept)  & 15.1300 (\textless 2e-16) \\
+$\beta_{1}$ (doseMedium) & -0.6448 (0.5237)         \\
+$\beta_{2}$ (doseHigh)   &  -2.0667 (0.0429)   \\            
+\end{tabular}
+\caption{Two-stage analysis results of model fitting of $\beta_{0ij}$}
+\label{tab::Two_stage_intercept}
+\end{table}
+
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{ll}
+\hline
+Parameters   & Estimate (p-value)       \\ 
+\hline
+$\beta_{4}$ (Intercept)   & 2.1500 (0.000438)  \\
+$\beta_{5}$ (doseMedium) &  0.4500 (0.540909)  \\
+$\beta_{6}$ (doseHigh)  &  2.6300 (0.001083)  \\      
+\end{tabular}
+\caption{Two-stage analysis results of model fitting of $\beta_{1ij}$} 
+\end{table}
 
 
 Comments:
 
 * Dose reference value is Low
-* Include numbrith or not
 * Complete cases only
 * idDose 9L i 6L just one observation. No slope.
 * Results
