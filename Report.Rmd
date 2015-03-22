@@ -361,9 +361,9 @@ $PCV_{ij} = \beta_{0ij} + \beta_{1ij}time + \epsilon_{ij}$ and $\epsilon_{ij} \s
 
 __Stage 2 Model__
 
-$\beta_{0ij} = \beta_0 + \beta_1 doseMedium + \beta_2 doseHigh + \beta_3 numbirths + b_{0ij}$
+$\beta_{0ij} = \beta_0 + \beta_1 doseMedium + \beta_2 doseHigh + b_{0ij}$
 
-$\beta_{1ij} = \beta_4 + \beta_5 doseMedium + \beta_6 doseHigh + \beta_7 numbirths + b_{1ij}$
+$\beta_{1ij} = \beta_3 + \beta_4 doseMedium + \beta_5 doseHigh + b_{1ij}$
 
 where $b_i \sim N(0, D)$
 
@@ -423,9 +423,9 @@ Parameter estimates for $\beta_{1ij}$ are included in Table \ref{tab::Two_stage_
 \hline
 Parameters   & Estimate (p-value)       \\ 
 \hline
-$\beta_{4}$ (Intercept)   & 2.1500 (0.000438)  \\
-$\beta_{5}$ (doseMedium) &  0.4500 (0.540909)  \\
-$\beta_{6}$ (doseHigh)  &  2.6300 (0.001083)  \\      
+$\beta_{3}$ (Intercept)   & 2.1500 (0.000438)  \\
+$\beta_{4}$ (doseMedium) &  0.4500 (0.540909)  \\
+$\beta_{5}$ (doseHigh)  &  2.6300 (0.001083)  \\      
 \end{tabular}
 \caption{Two-stage analysis results of model fitting of $\beta_{1ij}$}
 \label{tab::Two_stage_slope}
