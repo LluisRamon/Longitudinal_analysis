@@ -8,11 +8,13 @@ output:
     number_sections: yes
 ---
 
-```{r, echo = FALSE, warning = FALSE}
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
 library("knitr")
 library("ggplot2")
 library("xtable")
-opts_chunk$set(echo = FALSE, eval = TRUE, warning = FALSE)
+library("dplyr")
+library("nlme")
+opts_chunk$set(echo = FALSE, eval = TRUE, warning = FALSE, message = FALSE)
 ```
 
 ```{r}
@@ -176,6 +178,30 @@ $\beta_{0ij} = \beta_0 + \beta_1 doseMedium + \beta_2 doseHigh + \beta_3 numbirt
 $\beta_{1ij} = \beta_4 + \beta_5 doseMedium + \beta_6 doseHigh + \beta_7 numbirths + b_{1ij}$
 
 where $b_i \sim N(0, D)$
+
+```{r}
+cows.com$idDose <- paste(cows.com$id, cows.com$dose, sep = "_")
+cows.gd <- groupedData(pcv ~ time|idDose, data = cows.com, 
+                       outer = ~dose, inner = ~nbirth)
+plot(cows.gd)
+```
+
+
+```{r}
+cows.lmList <- nlme:::lmList(pcv ~ time, cows.gd)
+betas <- as.data.frame(coef(cows.lmList))
+names(betas) <- c("Intercept", "slope")
+
+betas <- add_rownames(betas, var = "idDose")
+betas.info <- cows.com %>% group_by(idDose, id, dose) %>% summarize(nbirth = mean(nbirth))
+bdd <- left_join(betas, betas.info)
+
+modbeta0 <- lm(Intercept ~ dose, bdd)
+modbeta1 <- lm(slope ~ dose, bdd)
+summary(modbeta0)
+summary(modbeta1)
+```
+
 
 
 Comments:
