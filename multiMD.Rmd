@@ -9,18 +9,10 @@ output:
 
 ## Multivariate model
 
-Despite the fact of not being the optimal choice, a multivariate linear model was fitted to the data. It seems reasonable to think that observations are not independent, since they are comming from the same cow. However, this model can also lead to some interesting results. 
-
-From the bivariate linear regressions models fitted in the previous section, both time and dose seem to have some kind of effect in the PCV. Following this rationale, the first multivariant model used to explain differences in PCV among observations, was the one with the additive effects of the variables time and dose. Since both were significant, two F-tests were performed right after, to test if the models adding the new additive effect of number of births or the second order interaction between time and dose, were significantly different with respect to the first one. The variable with the lowest p-value under 0.05 was added to the model. This procedure was followed until no other covariates or interactions below 3rd order could be added, because they would not produce a significantly better model. Note that with this procedure the most parsimonious model was ensured to be found. Table \ref{taulamodels} summarizes the results of all models considered. Finally, the best model explaining the data was, 
-
-$$
-PCV= 15.82 + 2.43X_{time} -0.32X_{doseM} -1.31X_{doseH} -0.34X_{nbirth} + 0.48X_{doseM}X_{time} + 2.35X_{doseH}X_{time}
-$$
-
 ```{r, echo=FALSE, results='hide'}
 round.pval <- function(pval=stop("p-value not given"), show.sig.stars=FALSE, alpha=0.05){
   
-	arrodonir <- function(pval, show.sig.stars, alpha){
+  arrodonir <- function(pval, show.sig.stars, alpha){
 		
 		if(is.na(pval)) return(NA)
 
@@ -123,7 +115,31 @@ add1(model2, scope=~.^2, test="F")
 ## final model:
 model2 <- lm(pcv ~ time*dose + nbirth, data=cows, y=T, model=T)
 summary(model2)
+anova(model2)
 ```
+
+Table \ref{taulamodels} summarizes the results of the estimation of the parameters of all models considered with the forward stepwise method for model selection. The last one corresponds to the most parsimonious model that better explains the data, whose especification is the following:
+
+$$
+PCV= 15.82 + 2.43X_{time} -0.32X_{doseM} -1.31X_{doseH} -0.34X_{nbirth} + 0.48X_{doseM}X_{time} + 2.35X_{doseH}X_{time}
+$$
+
+Although the coefficients for the additive effects for both doses are negative, when adding the interaction term it ensures a possitive effect. The difference in PCV for the same cows treated with high dose with respect to low dose will be:
+
+$$
+PCV(X_{doseH}=1)-PCV(X_{doseL}=1) = -1.31+2.35X_{time} 
+$$
+
+Notice that this is a positive quantity for every time, so we can consider that the high dose has a bigger effect than low dose (both coefficients significantly different than 0). For the medium dose, although being also positive, the coefficients are not significant, so could be 0. This calculations are always with respect to the same cow, when being treated with different doses.
+
+$$
+PCV(X_{doseM}=1)-PCV(X_{doseL}=1) = -0.32+0.48X_{time} 
+$$
+
+Therefore, the effect of the dose then changes with the time in a synergistic way. 
+Also, time has a possitive effect in the PCV, as it goes by PCV grows (p$<$0.00001). However the number of births seems to have a significant negative effect in the PCV (p=0.01).
+
+
 
 \begin{table}[ht]
 \centering
@@ -158,7 +174,7 @@ pcv\~{}time + dose & (Intercept) & 12.32 & 0.83 & 14.78 & $<$0.00001 \\
 
 \end{table}
 
-No more variables were added because the resulting model was not significantly different from the chosen one and were less parimonious. The analyses of the residuals of the model can be seen in Figure \ref{resplots}. Clearly, they present some issues: residuals are not independent from PCV, are not centered for high dose, no homoscedasticity, etc. So even thought this is not the optimal model to fit the data (and this is also shown in the residuals plots), the model is pointing in a pretty obvious way that the high dose is the only one that an effect significantly different from low dose. One of the problems with the data is that there are no controls among the cows so, the effect of the doses cannot be compared with PCV without the treatment. We are suposing that any of the treatments won't go worse than not giving a treatment, and that the higher the dose the bigger the effect. The interaction between time and dose is also pointing that the effect of the high dose is higher as time passes (synergistic), even when adjusting for the number of births.
+The analyses of the residuals of the model can be seen in Figure \ref{resplots}. Clearly, they present some issues: residuals are not independent from PCV, are not centered for high dose, no homoscedasticity, etc. So even thought this is not the optimal model to fit the data (and this is also shown in the residuals plots), the model is pointing in a pretty obvious way that the high dose is the only one that an effect significantly different from low dose. One of the problems with the data is that there are no controls among the cows so, the effect of the doses cannot be compared with PCV without any treatment.
 
 
 ```{r, echo=FALSE, fig.cap='Analyses of the residuals of the model.\\label{resplots}'}
