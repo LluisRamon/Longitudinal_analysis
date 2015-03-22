@@ -209,6 +209,9 @@ anova(cows.lme.Slop.birth, cows.lme.Slop.birthR)
 
 summary(cows.lme.Slop.birth)
 
+# Correlation structure
+ACF(cows.lme.Slop.birth)
+
 cows.lme.Slop.birthInt <- lme(pcv ~ time*dose - dose + nbirth, random = ~0 + time|idDose, data = cows.gd)
 
 summary(cows.lme.Slop.birthInt)
