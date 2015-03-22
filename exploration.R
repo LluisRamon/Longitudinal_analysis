@@ -122,6 +122,14 @@ summary(modbeta1)
 
 lm(slope ~ Intercept, bdd)
 
+# Graph option 1
+q <- qplot(factor(time), pcv, group = id, data = cows.com, geom = c("point", "line")) + facet_grid(dose ~ id)
+q + geom_abline(aes(intercept = Intercept, slope = slope), colour = "red", data = bdd, alpha = 0.8)
+
+# Graph option 2
+q <- qplot(factor(time), pcv, group = id, data = cows.com, geom = "point") + facet_grid(.~ dose)
+q + geom_abline(aes(intercept = Intercept, slope = slope, colour = factor(dose)), data = bdd)
+
 # Linear mixed model ------------------------------------------------------
 
 library("lattice")
