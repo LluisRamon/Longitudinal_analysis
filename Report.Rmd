@@ -352,6 +352,8 @@ plot(model2$model$nbirth, model2$residuals, ylab="residuals", xlab="Number of bi
 
 ## Two stage 
 
+* idDose 9L i 6L just one observation. No slope.
+
 __Stage 1 Model__
 
 $PCV_{ij} = \beta_{0ij} + \beta_{1ij}time + \epsilon_{ij}$ and $\epsilon_{ij} \sim N(0, \Sigma_ij)$
@@ -396,7 +398,7 @@ q <- qplot(factor(time), pcv, group = id, data = cows.com, geom = "point") + fac
 q + geom_abline(aes(intercept = Intercept, slope = slope, colour = factor(dose)), data = bdd)
 ```
 
-Parameter estimates for $\beta_{0ij}$ are included in Table \label{tab::Two_stage_intercept} with it corresponding p-value. The intercept (15.1300) represents the mean PCV value at time 1 for a cow treated with low dose, as it is the reference treatment. The parameter estimate for medium dose is not significant.
+Parameter estimates for $\beta_{0ij}$ are included in Table \ref{tab::Two_stage_intercept} with it corresponding p-value. The intercept (15.1300) represents the mean PCV value at time 1 for a cow treated with low dose, as it is the reference treatment. The parameter estimate for medium dose is not significant. However the estimate for dose high (-2.0667) is significant and it means that the intercept for a cow treated with dose high would be 13.0633.
 
 \begin{table}[ht]
 \centering
@@ -413,6 +415,7 @@ $\beta_{2}$ (doseHigh)   &  -2.0667 (0.0429)   \\
 \label{tab::Two_stage_intercept}
 \end{table}
 
+Parameter estimates for $\beta_{1ij}$ are included in Table \ref{tab::Two_stage_slope} with their corresponding p-value. The intercept (2.1500) representing the slope increases in time. As it was seen in the previous table, medium dose is not significant with respect to low dose. However, high dose is strongly significant with an estimate of 2.6300 which means that the slope for a cow treated with high dose would be 4.78.
 
 \begin{table}[ht]
 \centering
@@ -424,16 +427,10 @@ $\beta_{4}$ (Intercept)   & 2.1500 (0.000438)  \\
 $\beta_{5}$ (doseMedium) &  0.4500 (0.540909)  \\
 $\beta_{6}$ (doseHigh)  &  2.6300 (0.001083)  \\      
 \end{tabular}
-\caption{Two-stage analysis results of model fitting of $\beta_{1ij}$} 
+\caption{Two-stage analysis results of model fitting of $\beta_{1ij}$}
+\label{tab::Two_stage_slope}
 \end{table}
 
-
-Comments:
-
-* Dose reference value is Low
-* Complete cases only
-* idDose 9L i 6L just one observation. No slope.
-* Results
 
 ## Random effects
 
