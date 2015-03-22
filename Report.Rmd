@@ -350,9 +350,13 @@ plot(model2$model$nbirth, model2$residuals, ylab="residuals", xlab="Number of bi
 
 
 
-## Two stage 
+## Two stage analysis 
 
-* idDose 9L i 6L just one observation. No slope.
+In this section a Two stage is performed, where a linear regression is done for each cow in the firs stage. Then, with the coefficients a second regression is done for the intercept and the slope conditioning on dose.
+
+Several issues emerge with the missing values. As it was specified in missing data analysis section, there are several cows that have just pcv value at time 1, so it could not be possible to generate slope. For example cows number 6 and 9 treated with low dose.
+
+
 
 __Stage 1 Model__
 
