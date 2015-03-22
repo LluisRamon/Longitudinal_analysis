@@ -56,6 +56,7 @@ Since the gathering process of the data was unkonw, several assumptions were nee
 * Dose is assigned randomly in time to the cow.
 * For a given cow, the previous treatments (high, medium or low) do not affect the following ones.
 * Missings are complitely at random.
+* Time intervals are the same and fixed.
 
 # Statistical methods
 
