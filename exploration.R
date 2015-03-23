@@ -32,7 +32,7 @@ cows$timeDose <- factor(cows$timeDose, levels = c("1.L", "2.L", "3.L", "1.M", "2
 ggplot(aes(timeDose, pcv, fill = dose), data = cows) + geom_boxplot()
 cows$timeDose <- NULL
 
-# Some graphics -----------------------------------------------------------
+# Some graphs -----------------------------------------------------------
 
 qplot(nbirth, pcv, data = cows, facets = .~ dose, colour = factor(time))
 qplot(time, pcv, data = cows, group = id, geom = "line", facets = .~ dose) 
@@ -72,6 +72,11 @@ cor(cows.w[cond, c("1", "2", "3")], use = "pairwise.complete.obs")
 cond <- cows.w$dose == "H"
 cor(cows.w[cond, c("1", "2", "3")], use = "pairwise.complete.obs")
 # No missing values in the data
+
+
+# Multivariate model ------------------------------------------------------
+
+TODO(Gerard): Add step forward multivariate models
 
 # Two step modeling -------------------------------------------------------
 
@@ -191,6 +196,7 @@ q + geom_abline(intercept = cows.fixef[1], slope = cows.fixef[2]) +
 
 
 # With block and longitudinal model ---------------------------------------
+
 cows.lme.nested <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|id/dose, data = cows.com)
 
 summary(cows.lme.nested)
