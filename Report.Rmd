@@ -158,6 +158,7 @@ cows.w <- spread(cows, time, pcv)
 corrplot(cor(cows.w[, c("1", "2", "3")], use = "pairwise.complete.obs"), "ellipse")
 ```
 
+TODO(Lluís): Plot description
 
 # Results
 
@@ -549,6 +550,7 @@ ranEfDf <- separate(ranEfDf, idDose, c("id", "dose"), remove = FALSE)
 ranEfDf$dose <- factor(ranEfDf$dose, levels = c("L", "M", "H"))
 qplot(time, id, data = ranEfDf, color = dose, size = I(4))
 ```
+TODO(Lluís): Add confidence intervals
 
 TODO(Mathieu): Add figure text
 
