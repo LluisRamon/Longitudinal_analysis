@@ -172,8 +172,23 @@ anova(cows.lme.Slop.birth, cows.lme.CompSymm)
 anova(cows.lme.Slop.birth, cows.lme.corARMA)
 
 # We keep this model
+cows.fixef <- fixed.effects(cows.lme.Slop.birth)
 summary(cows.lme.Slop.birth)
 intervals(cows.lme.Slop.birth)
+
+cows.ranef <- ranef(cows.lme.Slop.birth, augFrame = TRUE)[c(13, 12, 24),]
+cows.ranef$intercept <- cows.fixef[1]
+cows.ranef <- add_rownames(cows.ranef, "idDose")
+
+bdd <- data.frame(x = 1:3, ymin = 20, 
+                  ymax = 25, pcv = 25)
+
+q <- ggplot(aes(time, pcv), data = cows.com) + geom_blank() + 
+  ylim(c(0, 30)) + xlim(c(0, 4))
+q + geom_abline(intercept = cows.fixef[1], slope = cows.fixef[2]) + 
+  geom_ribbon(aes(x = x, ymin = ymin, ymax = ymax), data = bdd) + 
+  geom_abline(aes(intercept = intercept, slope = time, colour = idDose), data = cows.ranef)
+
 
 # With block and longitudinal model ---------------------------------------
 cows.lme.nested <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|id/dose, data = cows.com)
