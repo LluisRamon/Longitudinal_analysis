@@ -193,13 +193,14 @@ cows.lme.Slop <- lme(pcv ~ time + dose, random = ~0 + time|idDose, data = cows.g
 anova(cows.gls, cows.lme.Inte)
 anova(cows.gls, cows.lme.Slop)
 
-AIC(cows.lme.Inte)
-AIC(cows.lme.Slop)
+# We see in anova that cows.lme.Slop has better AIC so we continue with this model.
 
-cows.lme <- lme(pcv ~ time + dose, random = ~time|idDose, data = cows.gd) 
+# cows.lme <- lme(pcv ~ time + dose, random = ~time|idDose, data = cows.gd) 
 # Crashes. With lmer we see a correlation of -1, so with just one random effect is enogh
+# library("lme4")
+# lmer(pcv ~ time + dose + (time | idDose), data = cows.com)
 
-# Add nbirth fixed effect 
+# Add nbirth fixed effect
 
 cows.lme.Slop <- lme(pcv ~ time + dose, random = ~0 + time|idDose, data = cows.gd, method = "ML")
 cows.lme.Slop.birth <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|idDose, data = cows.gd, method = "ML")
@@ -208,38 +209,44 @@ anova(cows.lme.Slop, cows.lme.Slop.birth)
 
 # Random effect with nbirth
 
+# We recalculate lme with method REML
 cows.lme.Slop.birth <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|idDose, data = cows.gd)
-cows.lme.Slop.birth <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|id/dose, data = cows.gd)
 cows.lme.Slop.birthR <- lme(pcv ~ time + dose + nbirth, random = ~0 + time + nbirth|idDose, 
                            data = cows.gd)
 
 anova(cows.lme.Slop.birth, cows.lme.Slop.birthR)
 
+# We keep this model
 summary(cows.lme.Slop.birth)
 
 # Correlation structure
-ACF(cows.lme.Slop.birth)
+cows.lme.Slop.birth <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|idDose, data = cows.gd)
+cows.lme.corAR1 <- update(cows.lme.Slop.birth, correlation = corAR1())
+cows.lme.CompSymm <- update(cows.lme.Slop.birth, correlation = corCompSymm())
+cows.lme.corARMA <- update(cows.lme.Slop.birth, correlation = corARMA(p = 2))
 
-cows.lme.Slop.birthInt <- lme(pcv ~ time*dose - dose + nbirth, random = ~0 + time|idDose, data = cows.gd)
+anova(cows.lme.Slop.birth, cows.lme.corAR1)
+anova(cows.lme.Slop.birth, cows.lme.CompSymm)
+anova(cows.lme.Slop.birth, cows.lme.corARMA)
 
-summary(cows.lme.Slop.birthInt)
+# We keep this model
+summary(cows.lme.Slop.birth)
 
-mod1 <- lme(pcv ~ time + dose, data = cows.gd)
+# With block and longitudinal model ---------------------------------------
+cows.lme.nested <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|id/dose, data = cows.com)
 
-# mod1 <- lme(pcv ~ time + dose, random = ~time|idDose, data = cows.gd) 
-# Convergence problems. Seen in previous models correlation -1 between random effects
-mod1 <- lme(pcv ~ time + dose, random = ~time -1|idDose, data = cows.gd)
-mod1 <- lme(pcv ~ time + dose, random = list(~1|idDose, ~time-1|idDose), data = cows.gd)
+summary(cows.lme.nested)
 
-# Alternative model specification
-mod1 <- lme(pcv ~ time + dose, random = ~1|id/dose, data = cows.com)
+coefficients(cows.lme.nested)
+coef(cows.lme.nested)
+intervals(cows.lme.nested)
 
-summary(mod1)
+fixed.effects(cows.lme.nested )
+randomEffects <- ranef(cows.lme.nested)
 
-mod1 <- lme(pcv ~ time + dose, random = ~time -1|idDose, 
-            correlation = corAR1(0.5), data = cows.gd)
-mod1 <- lme(pcv ~ time + dose, random = ~time -1|idDose, 
-            correlation = corAR1(form = ~1|idDose), data = cows.gd)
-mod1 <- lme(pcv ~ time + dose, random = ~time -1|idDose, 
-            correlation = corARMA(p = 2), data = cows.gd)
-summary(mod1)
+ranEfDf <- randomEffects$dose
+ranEfDf <- add_rownames(ranEfDf, "idDose")
+ranEfDf <- separate(ranEfDf, idDose, c("id", "dose"), remove = FALSE)
+
+qplot(time, idDose, data = ranEfDf, color = dose)
+qplot(time, id, data = ranEfDf, color = dose, size = I(4))
