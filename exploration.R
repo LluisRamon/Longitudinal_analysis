@@ -1,5 +1,12 @@
-# Import dataset ----------------------------------------------------------
+# Load packages -----------------------------------------------------------
+library("nlme") 
+# version 3.1-120 is required
+library("dplyr")
+library("ggplot2")
+library("tidyr")
+library("corrplot")
 
+# Import dataset ----------------------------------------------------------
 cows <- read.table("data/cattle_mes dades.txt", header = TRUE, 
                    sep = "\t", dec = ",", na.strings = "")
 
@@ -8,63 +15,49 @@ cows$dose <- factor(cows$dose, levels = c("L", "M", "H"))
 str(cows)
 head(cows)
 
-library("nlme") 
-# version 3.1-120 is required
-library("dplyr")
-
-cows.com <- cows[complete.cases(cows), ]
+cows.com <- na.omit(cows)
 cows.com$idDose <- paste(cows.com$id, cows.com$dose, sep = "_")
 
 # Summary statistics ------------------------------------------------------
-
+str(cows)
+head(cows)
 summary(cows)
 
 boxplot(pcv ~ time, data = cows)
 boxplot(pcv ~ dose, data = cows)
 boxplot(pcv ~ nbirth, data = cows)
 
+cows$timeDose <- paste(cows$time, cows$dose, sep = ".")
+cows$timeDose <- factor(cows$timeDose, levels = c("1.L", "2.L", "3.L", "1.M", "2.M", "3.M", "1.H", "2.H", "3.H"))
+ggplot(aes(timeDose, pcv, fill = dose), data = cows) + geom_boxplot()
+cows$timeDose <- NULL
+
 # Some graphics -----------------------------------------------------------
 
-library(ggplot2) # Package for graphics
-
 qplot(nbirth, pcv, data = cows, facets = .~ dose, colour = factor(time))
-
 qplot(time, pcv, data = cows, group = id, geom = "line", facets = .~ dose) 
 qplot(time, pcv, data = cows, group = id, geom = "line", facets = .~ dose, 
       colour = nbirth)
-qplot(time, pcv, data = cows, group = id, geom = "line", facets = .~ dose, 
-      colour = factor(id))
+qplot(factor(time), pcv, data = cows, group = id, geom = "line", facets = .~ dose, 
+      colour = factor(id)) + scale_color_discrete(guide = 'none')
 
-# Add a linear model ------------------------------------------------------
 
-cows$id <- as.factor(cows$id)
-hist(cows$pcv)
-hist(log(cows$pcv))
+# Linear model on nbirths ------------------------------------------------------
 
-lcows <- lm(log(pcv) ~ . -id, data = cows)
-summary(lcows)
-vcov(summary(lcows))
-influence(lcows)
+lcowsnbirth <- lm(pcv ~ nbirth, data = cows[cows$time == 1,])
+summary(lcowsnbirth)
 
-plot(lcows)
+# Missing values ----------------------------------------------------------
 
-hist(residuals(lcows))
-
-cows$residual[!is.na(cows$pcv)] <- residuals(lcows)
-              
-plot(cows$id, cows$residual)
-plot(cows$time, cows$residual)
-plot(cows$nbirth, cows$residual)
-plot(cows$dose, cows$residual)
-
-cows$residual <- NULL
-
+missingsTable <- 10 - table(cows.com$dose, cows.com$time)
+missingsTable
 
 # Covariance and Correlation Structure ------------------------------------
 
-cor(cows[, 3:5], use = "complete.obs")
+cows.w <- spread(cows, time, pcv)
+corrplot(cor(cows.w[, c("1", "2", "3")], use = "pairwise.complete.obs"), "ellipse")
 
-library("tidyr")
+
 cows.w <- spread(cows, time, pcv)
 cor(cows.w[, c("1", "2", "3")], use = "pairwise.complete.obs")
 # Correlation for each dose
