@@ -123,65 +123,15 @@ q + geom_abline(aes(intercept = Intercept, slope = slope), colour = "red", data 
 q <- qplot(factor(time), pcv, group = id, data = cows.com, geom = "point") + facet_grid(.~ dose)
 q + geom_abline(aes(intercept = Intercept, slope = slope, colour = factor(dose)), data = bdd)
 
-# Linear mixed model ------------------------------------------------------
-
-library("lattice")
-library("lme4")
-
-cows.gls <- lm(pcv ~ time + dose, data = cows.com, method="REML")
-cows.lme <- lmer(pcv ~ time + dose + (1 | idDose), data = cows.com)
-
-anova(cows.gls, cows.lme)
-
-cows.lme <- lmer(pcv ~ time + dose + (time | idDose), data = cows.com)
-cows.lme0 <- lmer(pcv ~ time + dose + (0 + time | idDose), data = cows.com)
-cows.lme1 <- lmer(pcv ~ time + dose + nbirth + (time | idDose), data = cows.com)
-cows.lme10 <- lmer(pcv ~ time + dose + nbirth + (0 + time | idDose), data = cows.com)
-
-
-xyplot(pcv ~ time | idDose, data = cows.com, type = "l")
-
-summary(cows.lme)
-summary(cows.lme0)
-summary(cows.lme1)
-summary(cows.lme10)
-
-
-anova(cows.lme, cows.lme0)
-anova(cows.lme0, cows.lme1)
-anova(cows.lme1, cows.lme10)
-
-# This model looks to be better
-cows.lme10
-
-residus <- residuals(cows.lme10)
-
-plot(residus)
-hist(residus)
-
-plot(cows.lme10)
-plot(cows.lme10, dose ~ resid(., scaled=TRUE))
-VarCorr(cows.lme10)
-
-# Interesting functions
-ranef(cows.lme10)
-pr1 <- profile(cows.lme10)
-confint(pr1)
-dotplot(ranef(cows.lme, condVar = TRUE))
-dotplot(ranef(cows.lme))
-qqmath(ranef(cows.lme, condVar = TRUE))
 
 # Models with lme for including correlation structure ---------------------
 
-cows.gd <- groupedData(pcv ~ time|idDose, data = cows.com, 
-                       outer = ~dose, inner = ~nbirth)
-
 # Fixed effect
-cows.gls <- gls(pcv ~ time + dose, data = cows.com, method="REML")
+cows.gls <- gls(pcv ~ time + dose, data = cows.com, method = "REML")
 
 # Random effect
-cows.lme.Inte <- lme(pcv ~ time + dose, random = ~1|idDose, data = cows.gd)
-cows.lme.Slop <- lme(pcv ~ time + dose, random = ~0 + time|idDose, data = cows.gd)
+cows.lme.Inte <- lme(pcv ~ time + dose, random = ~1|idDose, data = cows.com)
+cows.lme.Slop <- lme(pcv ~ time + dose, random = ~0 + time|idDose, data = cows.com)
 
 anova(cows.gls, cows.lme.Inte)
 anova(cows.gls, cows.lme.Slop)
@@ -195,17 +145,16 @@ anova(cows.gls, cows.lme.Slop)
 
 # Add nbirth fixed effect
 
-cows.lme.Slop <- lme(pcv ~ time + dose, random = ~0 + time|idDose, data = cows.gd, method = "ML")
-cows.lme.Slop.birth <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|idDose, data = cows.gd, method = "ML")
+cows.lme.Slop <- update(cows.lme.Slop, method = "ML")
+cows.lme.Slop.birth <- update(cows.lme.Slop, fixed  = ~ . + nbirth, method = "ML")
 
 anova(cows.lme.Slop, cows.lme.Slop.birth)
 
 # Random effect with nbirth
 
 # We recalculate lme with method REML
-cows.lme.Slop.birth <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|idDose, data = cows.gd)
-cows.lme.Slop.birthR <- lme(pcv ~ time + dose + nbirth, random = ~0 + time + nbirth|idDose, 
-                           data = cows.gd)
+cows.lme.Slop.birth <- update(cows.lme.Slop.birth, method = "REML")
+cows.lme.Slop.birthR <-  update(cows.lme.Slop.birth, random = ~0 + time + nbirth|idDose, method = "REML")
 
 anova(cows.lme.Slop.birth, cows.lme.Slop.birthR)
 
@@ -213,7 +162,7 @@ anova(cows.lme.Slop.birth, cows.lme.Slop.birthR)
 summary(cows.lme.Slop.birth)
 
 # Correlation structure
-cows.lme.Slop.birth <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|idDose, data = cows.gd)
+cows.lme.Slop.birth <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|idDose, data = cows.com)
 cows.lme.corAR1 <- update(cows.lme.Slop.birth, correlation = corAR1())
 cows.lme.CompSymm <- update(cows.lme.Slop.birth, correlation = corCompSymm())
 cows.lme.corARMA <- update(cows.lme.Slop.birth, correlation = corARMA(p = 2))
@@ -224,6 +173,7 @@ anova(cows.lme.Slop.birth, cows.lme.corARMA)
 
 # We keep this model
 summary(cows.lme.Slop.birth)
+intervals(cows.lme.Slop.birth)
 
 # With block and longitudinal model ---------------------------------------
 cows.lme.nested <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|id/dose, data = cows.com)
