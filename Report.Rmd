@@ -70,7 +70,7 @@ Despite the fact of not being the optimal choice, a multivariate linear model wa
 
 The response variable was PCV since the severity the disease was evaluated by this parameter. As we wanted to estimate the effect of dose in diseased cows in time, these two variables were included in the model. 
 
-From this initial model, a forward stepwise method was carried for the model selection,  including additional covariates or interactions between them. The models were compared using F-test. This procedure was followed until no other covariates or interactions below 3rd order could be added, because they would not produce a significantly better model. Leading this to the most parsimonious model with all significant variables.
+From this initial model, a forward stepwise method was carried for the model selection, including additional covariates or interactions between them. The models were compared using F-test. This procedure was followed until no other covariates or interactions below 3rd order could be added, because they would not produce a significantly better model. Leading this to the most parsimonious model with all significant variables.
 
 A validation of the model was performed to check that the residuals were normal, homoscedastic and independent between them and to other rellevant covariates. 
 
@@ -88,12 +88,13 @@ Since the Two Stage model didn't take into acount the within subjects variabilit
 
 It distinguishes the mean structure of the covariates as a fixed effect and also some variability between and within subjects as a random effects. It allows more flexibility to model.
 
-The methodology for model selection was the following as proposed by Verbeke and Molenberghs:
+In order to select the best model the following methodology was used.
 
 1. Selection of a Preliminary Mean Structure
 2. Selection of a Preliminary Random-Effects Structure
 3. Selection of a Residual Covariance Structure
-4. Model Reduction
+
+To compare different models the same estimation method was needed. In case of nested fixed effects a Maximum Likelihood method was used. Whenever there were random effects Restricted Maximum Likelihood was used. To chose the best model a Likelihood Ratio test was performed. If it was significant we kept the new variable or random effect. If not we drop it to obtain a more parsimonious model.
 
 A validation of the model was performed to check that the residuals were normal, homoscedastic and independent between them and to other rellevant covariates. 
 
@@ -352,7 +353,7 @@ plot(model2$model$nbirth, model2$residuals, ylab="residuals", xlab="Number of bi
 
 ## Two stage analysis 
 
-In this section a two stage analysis is performed. A linear regression is fitted for each cow in the first stage. Then, with the coefficients obtained, a second linear regression is done for the intercept and the slope conditioning on the dose.
+In this section a two stage analysis is performed. A linear regression is fitted for each cow in the first stage. For this purpose a new variable _idDose_ was created merging id and dose, so that 30 different cows could be considered. Then, with the coefficients obtained, a second linear regression is done for the intercept and the slope conditioning on the dose.
 
 Several issues emerge with the missing values. As it was specified in the missing data analysis section, several cows have just a pcv value for time 1, so it was not possible to generate a slope. For instance cows number 6 and 9 treated with low dose do not have a slope after stage one.. 
 
@@ -437,9 +438,64 @@ Here we have the estimates and p-values for $\beta_{1ij}$. The intercept (2.1500
 
 ## Random effects
 
+Since variability is lost in the Two stage analysis, a linear mixed model is performed. It allowed us to add the variability due the difference between cows identified by the variable _idDose_ which merges _id_ and _dose_.
+
+### Mixed effect model with _idDose_
+
+As explained in the section X, a starting model was fitted. Then several alternative models including a random effect were fitted. Table X summarizes the model selection process for the selection of a random effects structure.
+
+TODO(gerard): Create table.
+id, model, AIC, p-valude
 
 
-$PCV_{i} = (\beta_{0} + b_{0i}) + (\beta_{1} + b_{1i})time + \beta_2 doseMedium + \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}$ and $\epsilon_{i} \sim N(0, \Sigma_ij)$
+$\beta_{0} + \beta_{1}time + \beta_2 doseMedium + \beta_3 doseHigh + \epsilon_{i}$ 
+
+$\beta_{0} +  (\beta_{1} + b_{1i})time + \beta_2 doseMedium + \beta_3 doseHigh + \epsilon_{i}$ 
+
+$(\beta_{0} + b_{0i}) +  beta_{1}time + \beta_2 doseMedium + \beta_3 doseHigh + \epsilon_{i}$
+
+
+Table X includes different models with their comparison against the reference model. An information criterion (AIC) and the corresponding p-value is also included. Model 0 was the starting and reference model with only fixed effects. At model 1 a random effect was added at the time and for model 2 it was added at the intercept.
+
+The models that included the random effect were significantly better than the reference one. In order to compare the two remaining models, the AIC was used because they were not nested and a LRT could not be performed. In this case model 2 was prefered as having lower AIC.
+
+In following steps variable nbirth was included in the model (p = XXX). Neither adding of random effects nor including a correlation structure was significant. In order to have the most parsimonious model the following one was selected:
+
+$$PCV_{i} = \beta_{0} + (\beta_{1} + b_{1i})time + \beta_2 doseMedium + \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}$$
+
+TODO(Gerard): Table with coefficients, intervals and p-values.
+Include random effect.
+
+```{r}
+# Data for the table
+# intervals(cows.lme.Slop.birth)
+# summary(cows.lme.Slop.birth)
+```
+
+The parameter estimates for the model are included in Table XX along with their corresponding p-value. The intercept (14.69) represents the mean PCV value at time 1 for a cow treated with low dose. The parameter estimates for the medium dose and high dose are not significant. This result disagree with all previous data exploration and models. It seems that using the model simplification with _idDose_ does not take into acount _id_ variability.
+
+In Figure XX it can be seen the mean slope $\beta_{1} = 3.55$. The random effect $b_{1i} = 1.06$ can be seen in the greyed part of the graph. As example _idDose_ slopes are present for cows 4_H, 3_M, 8_L.
+
+
+```{r}
+# TODO(Lluis): plot with beta and random effect.
+```
+
+As it can be seen in Figure XX and Table XX $b_{1i}$ is the variability added to the mean slope in time depending on each _idDose_. It means that the effect of time is different for each _idDose_. For instance, if a given cow had a positve random effect, time would have a bigger slope. Time has always a positive impact on PCV for each _idDose_.
+
+
+### Mixed effect model with id and nested dose
+
+Switch to id/dose
+
+$PCV_{ij} = \beta_{0} + (\beta_{1} + b_{1i} + b_{1ij})time + \beta_2 doseMedium + \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}$ and $\epsilon_{i} \sim N(0, \Sigma_ij)$
+
+i stands for id
+j stands fore dose
+
+Explain Table or coefficients
+
+Graph
 
 
 # Discussion
