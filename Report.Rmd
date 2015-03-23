@@ -274,7 +274,7 @@ summary(model2)
 anova(model2)
 ```
 
-Table \ref{taulamodels} summarizes the results of the estimation of the parameters of all models considered with the forward stepwise method for model selection. The last one corresponds to the most parsimonious model that better explains the data, whose especification is the following:
+Table \ref{taulamodels} summarizes the results of the estimation of the parameters of all models. The model selection which was used is the forward stepwise method. The last model corresponds to the most parsimonious one. It is the one that better explains the data, here is its specification:
 
 $$
 PCV= 15.82 + 2.43X_{time} -0.32X_{doseM} -1.31X_{doseH} -0.34X_{nbirth} + 0.48X_{doseM}X_{time} + 2.35X_{doseH}X_{time}
@@ -286,14 +286,14 @@ $$
 PCV(X_{doseH}=1)-PCV(X_{doseL}=1) = -1.31+2.35X_{time} 
 $$
 
-Notice that this is a positive quantity for every time, so we can consider that the high dose has a bigger effect than low dose (both coefficients significantly different than 0). For the medium dose, although being also positive, the coefficients are not significant, so could be 0. This calculations are always with respect to the same cow, when being treated with different doses.
+Notice that for every time the result is positive. Therefore we can consider that the high dose has a bigger effect than low dose (both coefficients are significantly different from 0). For the medium dose the coefficients are not significant. These calculations are always with respect to the same cow, when being treated with different doses.
 
 $$
 PCV(X_{doseM}=1)-PCV(X_{doseL}=1) = -0.32+0.48X_{time} 
 $$
 
-Therefore, the effect of the dose then changes with the time in a synergistic way. 
-Also, time has a possitive effect in the PCV, as it goes by PCV grows (p$<$0.00001). However the number of births seems to have a significant negative effect in the PCV (p=0.01).
+Here the effect of the dose changes with the time in a synergistic way. 
+Also, time has a possitive effect in the PCV(p$<$0.00001). However the number of births seems to have a significant negative effect in the PCV (p=0.01).
 
 
 
@@ -330,7 +330,7 @@ pcv\~{}time + dose & (Intercept) & 12.32 & 0.83 & 14.78 & $<$0.00001 \\
 
 \end{table}
 
-The analyses of the residuals of the model can be seen in Figure \ref{resplots}. Clearly, they present some issues: residuals are not independent from PCV, are not centered for high dose, no homoscedasticity, etc. So even thought this is not the optimal model to fit the data (and this is also shown in the residuals plots), the model is pointing in a pretty obvious way that the high dose is the only one that an effect significantly different from low dose. One of the problems with the data is that there are no controls among the cows so, the effect of the doses cannot be compared with PCV without any treatment.
+The analyses of the residuals of the model can be seen in Figure \ref{resplots}. Clearly, they present some issues: residuals are not independent from PCV, they are not centered for the high dose, there is no homoscedasticity, etc. Even though this model is not optimal model to fit the data (and this is also shown in the residuals plots), it is pointing in a pretty obvious way that the high dose is the only one that an effect significantly different from low dose. One of the problems with the data is that there is no control among the cows so the effect of the doses cannot be compared with PCV without any treatment.
 
 
 ```{r, echo=FALSE, fig.cap='Analyses of the residuals of the model.\\label{resplots}'}
@@ -352,9 +352,9 @@ plot(model2$model$nbirth, model2$residuals, ylab="residuals", xlab="Number of bi
 
 ## Two stage analysis 
 
-In this section a Two stage is performed, where a linear regression is done for each cow in the firs stage. Then, with the coefficients a second regression is done for the intercept and the slope conditioning on dose.
+In this section a two stage analysis is performed. A linear regression is fitted for each cow in the first stage. Then, with the coefficients obtained, a second linear regression is done for the intercept and the slope conditioning on the dose.
 
-Several issues emerge with the missing values. As it was specified in missing data analysis section, there are several cows that have just pcv value at time 1, so it could not be possible to generate slope. For example cows number 6 and 9 treated with low dose. 
+Several issues emerge with the missing values. As it was specified in the missing data analysis section, several cows have just a pcv value for time 1, so it was not possible to generate a slope. For instance cows number 6 and 9 treated with low dose do not have a slope after stage one.. 
 
 __Stage 1 Model__
 
@@ -388,7 +388,7 @@ modbeta1 <- lm(slope ~ dose, bdd)
 # summary(modbeta1)
 ```
 
-At Figure \ref{fig:two_stage_graph} it is shown all the linear regressions done at the first stage analysis. The slopes are positive for each dose but bigger for high dose treatment. Comparing this Figure with Figure \ref{fig:qplot} it can be seen that the information much variability is lost and the the data is reduced.
+Figure \ref{fig:two_stage_graph} shows all the linear regressions done at the first stage analysis. The slopes are positive for each dose but bigger for the high dose treatment. By comparing this Figure with Figure \ref{fig:qplot} one can notice that a lot of information about the variability is lost.
 
 ```{r two_stage_graph, fig.cap = "Each line represents the linear model fited for each cow and dose.\\label{fig:two_stage_graph}"}
 # Graph option 1
@@ -400,7 +400,6 @@ q <- qplot(factor(time), pcv, group = id, data = cows.com, geom = "point") + fac
 q + geom_abline(aes(intercept = Intercept, slope = slope, colour = factor(dose)), data = bdd)
 ```
 
-Parameter estimates for $\beta_{0ij}$ are included in Table \ref{tab::Two_stage_intercept} with it corresponding p-value. The intercept (15.1300) represents the mean PCV value at time 1 for a cow treated with low dose, as it is the reference treatment. The parameter estimate for medium dose is not significant. However the estimate for dose high (-2.0667) is significant and it means that the intercept for a cow treated with dose high would be 13.0633.
 
 \begin{table}[ht]
 \centering
@@ -417,7 +416,8 @@ $\beta_{2}$ (doseHigh)   &  -2.0667 (0.0429)   \\
 \label{tab::Two_stage_intercept}
 \end{table}
 
-Parameter estimates for $\beta_{1ij}$ are included in Table \ref{tab::Two_stage_slope} with their corresponding p-value. The intercept (2.1500) representing the slope increases in time. As it was seen in the previous table, medium dose is not significant with respect to low dose. However, high dose is strongly significant with an estimate of 2.6300 which means that the slope for a cow treated with high dose would be 4.78.
+The parameter estimates for $\beta_{0ij}$ are included in Table \ref{tab::Two_stage_intercept} along with their corresponding p-value. The intercept (15.1300) represents the mean PCV value at time 1 for a cow treated with low dose, as it is the reference treatment. The parameter estimate for the medium dose is not significant. However the estimate for dose high (-2.0667) is significant and it means that the intercept for a cow treated with dose high would be 13.0633.
+
 
 \begin{table}[ht]
 \centering
@@ -433,6 +433,7 @@ $\beta_{5}$ (doseHigh)  &  2.6300 (0.001083)  \\
 \label{tab::Two_stage_slope}
 \end{table}
 
+Here we have the estimates and p-values for $\beta_{1ij}$. The intercept (2.1500) represents the average slope. As it was seen in the previous table, the medium dose is not significant with respect to the low dose. However, the high dose is strongly significant with an estimate of 2.6300 which means that the slope for a cow treated with high dose would be 4.78.
 
 ## Random effects
 
