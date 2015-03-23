@@ -444,9 +444,19 @@ Since variability is lost in the Two stage analysis, a linear mixed model is per
 
 As explained in the section X, a starting model was fitted. Then several alternative models including a random effect were fitted. Table X summarizes the model selection process for the selection of a random effects structure.
 
-TODO(gerard): Create table.
+TODO(Gerard): Create table.
 id, model, AIC, p-valude
 
+```{r}
+# anova(cows.gls, cows.lme.Inte)
+#               Model df      AIC      BIC    logLik   Test  L.Ratio p-value
+# cows.gls          1  5 361.3161 372.6995 -175.6581                        
+# cows.lme.Inte     2  6 352.2471 365.9071 -170.1236 1 vs 2 11.06901   9e-04
+# anova(cows.gls, cows.lme.Slop)
+#               Model df      AIC      BIC    logLik   Test  L.Ratio p-value
+# cows.gls          1  5 361.3161 372.6995 -175.6581                        
+# cows.lme.Slop     2  6 329.3684 343.0284 -158.6842 1 vs 2 33.94776  <.0001
+```
 
 $\beta_{0} + \beta_{1}time + \beta_2 doseMedium + \beta_3 doseHigh + \epsilon_{i}$ 
 
@@ -464,12 +474,44 @@ In following steps variable nbirth was included in the model (p = XXX). Neither 
 $$PCV_{i} = \beta_{0} + (\beta_{1} + b_{1i})time + \beta_2 doseMedium + \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}$$
 
 TODO(Gerard): Table with coefficients, intervals and p-values.
-Include random effect.
+Include also random effect.
 
 ```{r}
 # Data for the table
 # intervals(cows.lme.Slop.birth)
+# Approximate 95% confidence intervals
+# 
+#  Fixed effects:
+#                  lower       est.       upper
+# (Intercept) 12.8401336 14.6905559 16.54097827
+# time         2.9487811  3.5501903  4.15159949
+# doseM       -1.3425377  0.2352665  1.81307059
+# doseH       -0.5714079  0.9564620  2.48433184
+# nbirth      -0.6517965 -0.3338440 -0.01589149
+# attr(,"label")
+# [1] "Fixed effects:"
+# 
+#  Random Effects:
+#   Level: idDose 
+#              lower     est.    upper
+# sd(time) 0.7411939 1.062889 1.524207
+# 
+#  Within-group standard error:
+#    lower     est.    upper 
+# 1.101657 1.368545 1.700088 
 # summary(cows.lme.Slop.birth)
+# Random effects:
+#  Formula: ~0 + time | idDose
+#             time Residual
+# StdDev: 1.062889 1.368545
+# 
+# Fixed effects: pcv ~ time + dose + nbirth 
+#                 Value Std.Error DF   t-value p-value
+# (Intercept) 14.690556 0.9192838 46 15.980436  0.0000
+# time         3.550190 0.2987781 46 11.882363  0.0000
+# doseM        0.235266 0.7660959 25  0.307098  0.7613
+# doseH        0.956462 0.7418506 25  1.289292  0.2091
+# nbirth      -0.333844 0.1543805 25 -2.162476  0.0403
 ```
 
 The parameter estimates for the model are included in Table XX along with their corresponding p-value. The intercept (14.69) represents the mean PCV value at time 1 for a cow treated with low dose. The parameter estimates for the medium dose and high dose are not significant. This result disagree with all previous data exploration and models. It seems that using the model simplification with _idDose_ does not take into acount _id_ variability.
@@ -508,6 +550,8 @@ ranEfDf$dose <- factor(ranEfDf$dose, levels = c("L", "M", "H"))
 qplot(time, id, data = ranEfDf, color = dose, size = I(4))
 ```
 
+TODO(Mathieu): Add figure text
+
 In Figure XX all 
 
 
@@ -516,10 +560,15 @@ TODO(Gerard): Model validation
 
 # Discussion
 
+TODO(Mathieu): First version
+TODO(All): Revise comments
+
 Giving birth is supposed to weaken the cow, besides *nbirth* is also an indicator of how old the cow is.
 
-
 # Limitations and Further research
+
+TODO(Mathieu): First version
+TODO(All): Revise comments
 
 # Bibliography
 
