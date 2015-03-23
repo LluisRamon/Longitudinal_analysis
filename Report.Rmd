@@ -474,6 +474,8 @@ Include random effect.
 
 The parameter estimates for the model are included in Table XX along with their corresponding p-value. The intercept (14.69) represents the mean PCV value at time 1 for a cow treated with low dose. The parameter estimates for the medium dose and high dose are not significant. This result disagree with all previous data exploration and models. It seems that using the model simplification with _idDose_ does not take into acount _id_ variability.
 
+TODO(Mathieu): Revise sentences
+
 In Figure XX it can be seen the mean slope $\beta_{1} = 3.55$. The random effect $b_{1i} = 1.06$ can be seen in the greyed part of the graph. As example _idDose_ slopes are present for cows 4_H, 3_M, 8_L.
 
 
@@ -483,19 +485,33 @@ In Figure XX it can be seen the mean slope $\beta_{1} = 3.55$. The random effect
 
 As it can be seen in Figure XX and Table XX $b_{1i}$ is the variability added to the mean slope in time depending on each _idDose_. It means that the effect of time is different for each _idDose_. For instance, if a given cow had a positve random effect, time would have a bigger slope. Time has always a positive impact on PCV for each _idDose_.
 
-
 ### Mixed effect model with id and nested dose
 
-Switch to id/dose
+```{r}
+cows.lme.nested <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|id/dose, data = cows.com)
+```
 
-$PCV_{ij} = \beta_{0} + (\beta_{1} + b_{1i} + b_{1ij})time + \beta_2 doseMedium + \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}$ and $\epsilon_{i} \sim N(0, \Sigma_ij)$
+Keeping the same model as it was detected in previous section, the grouping was changed to id/dose in order to get the variability of each id. In this way we are getting a random effect for each id and each id and dose. The second random effect differencies the effect of time within each cow depending on the kind of doses that was administrated.
 
-i stands for id
-j stands fore dose
+$PCV_{ij} = \beta_{0} + (\beta_{1} + b_{1i} + b_{1ij})time + \beta_2 doseMedium + \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}$ and $\epsilon_{i} \sim N(0, \Sigma_ij)$ i stands for id, j stands fore dose.
 
-Explain Table or coefficients
+The estimates of this model dos'nt change much from previous model. Basically the estimate for medium dose is 0.297 (p = 0.6680) and for high dose is 1.671 (0.021). With this model dose high is significant and positive effect. 
 
-Graph
+In Figure XX it can be seen the effect of the random effect for each cow and each dose in the cow.
+
+```{r}
+randomEffects <- ranef(cows.lme.nested)
+ranEfDf <- randomEffects$dose
+ranEfDf <- add_rownames(ranEfDf, "idDose")
+ranEfDf <- separate(ranEfDf, idDose, c("id", "dose"), remove = FALSE)
+ranEfDf$dose <- factor(ranEfDf$dose, levels = c("L", "M", "H"))
+qplot(time, id, data = ranEfDf, color = dose, size = I(4))
+```
+
+In Figure XX all 
+
+
+TODO(Gerard): Model validation
 
 
 # Discussion
