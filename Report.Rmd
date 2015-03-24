@@ -158,7 +158,7 @@ cows.w <- spread(cows, time, pcv)
 corrplot(cor(cows.w[, c("1", "2", "3")], use = "pairwise.complete.obs"), "ellipse")
 ```
 
-TODO(Lluís): Plot description
+TODO(Llu?s): Plot description
 
 # Results
 
@@ -382,10 +382,10 @@ names(betas) <- c("Intercept", "slope")
 
 betas <- add_rownames(betas, var = "idDose")
 betas.info <- cows.com %>% group_by(idDose, id, dose) %>% summarize(nbirth = mean(nbirth))
-bdd <- left_join(betas, betas.info)
+# bdd <- left_join(betas, betas.info)
 
-modbeta0 <- lm(Intercept ~ dose, bdd)
-modbeta1 <- lm(slope ~ dose, bdd)
+# modbeta0 <- lm(Intercept ~ dose, bdd)
+# modbeta1 <- lm(slope ~ dose, bdd)
 # summary(modbeta0)
 # summary(modbeta1)
 ```
@@ -399,7 +399,7 @@ Figure \ref{fig:two_stage_graph} shows all the linear regressions done at the fi
 
 # Graph option 2
 q <- qplot(factor(time), pcv, group = id, data = cows.com, geom = "point") + facet_grid(.~ dose)
-q + geom_abline(aes(intercept = Intercept, slope = slope, colour = factor(dose)), data = bdd)
+# q + geom_abline(aes(intercept = Intercept, slope = slope, colour = factor(dose)), data = bdd)
 ```
 
 
@@ -448,22 +448,35 @@ As explained in the section X, a starting model was fitted. Then several alterna
 TODO(Gerard): Create table.
 id, model, AIC, p-valude
 
-```{r}
-# anova(cows.gls, cows.lme.Inte)
-#               Model df      AIC      BIC    logLik   Test  L.Ratio p-value
-# cows.gls          1  5 361.3161 372.6995 -175.6581                        
-# cows.lme.Inte     2  6 352.2471 365.9071 -170.1236 1 vs 2 11.06901   9e-04
-# anova(cows.gls, cows.lme.Slop)
-#               Model df      AIC      BIC    logLik   Test  L.Ratio p-value
-# cows.gls          1  5 361.3161 372.6995 -175.6581                        
-# cows.lme.Slop     2  6 329.3684 343.0284 -158.6842 1 vs 2 33.94776  <.0001
+```{r, results='asis'}
+# Fixed effect
+cows.gls <- gls(pcv ~ time + dose, data = cows.com, method = "REML")
+
+# Random effect
+cows.lme.Inte <- lme(pcv ~ time + dose, random = ~1|idDose, data = cows.com)
+cows.lme.Slop <- lme(pcv ~ time + dose, random = ~0 + time|idDose, data = cows.com)
+
+taulainte <- as.matrix(anova(cows.gls, cows.lme.Inte))[,-1]
+taulainte <- taulainte[,-c(1, 6)]
+
+taulaslope <- as.matrix(anova(cows.gls, cows.lme.Slop))[,-1]
+taulaslope <- taulaslope[,-c(1, 6)]
+
+taula <- taulainte
+taula <- rbind(taula, taulaslope[2,])
+taula <- apply(taula,1:2,as.numeric)
+taula[,-6] <- round(taula[,-6],3)
+rownames(taula) <- c("Fixed Effects Model", "Random Intercept Model", "Random Slope Model")
+taula[-1,6] <- round.pval(taula[-1,6])
+
+print(xtable(taula, label="anovas:Random_slope_intercept", caption="Anova table comparing the Fixed effects model (no random effects) with the random intercept and the random slope models."))
 ```
 
 $\beta_{0} + \beta_{1}time + \beta_2 doseMedium + \beta_3 doseHigh + \epsilon_{i}$ 
 
 $\beta_{0} +  (\beta_{1} + b_{1i})time + \beta_2 doseMedium + \beta_3 doseHigh + \epsilon_{i}$ 
 
-$(\beta_{0} + b_{0i}) +  beta_{1}time + \beta_2 doseMedium + \beta_3 doseHigh + \epsilon_{i}$
+$(\beta_{0} + b_{0i}) +  \beta_{1}time + \beta_2 doseMedium + \beta_3 doseHigh + \epsilon_{i}$
 
 
 Table X includes different models with their comparison against the reference model. An information criterion (AIC) and the corresponding p-value is also included. Model 0 was the starting and reference model with only fixed effects. At model 1 a random effect was added at the time and for model 2 it was added at the intercept.
@@ -477,42 +490,15 @@ $$PCV_{i} = \beta_{0} + (\beta_{1} + b_{1i})time + \beta_2 doseMedium + \beta_3 
 TODO(Gerard): Table with coefficients, intervals and p-values.
 Include also random effect.
 
-```{r}
-# Data for the table
-# intervals(cows.lme.Slop.birth)
-# Approximate 95% confidence intervals
-# 
-#  Fixed effects:
-#                  lower       est.       upper
-# (Intercept) 12.8401336 14.6905559 16.54097827
-# time         2.9487811  3.5501903  4.15159949
-# doseM       -1.3425377  0.2352665  1.81307059
-# doseH       -0.5714079  0.9564620  2.48433184
-# nbirth      -0.6517965 -0.3338440 -0.01589149
-# attr(,"label")
-# [1] "Fixed effects:"
-# 
-#  Random Effects:
-#   Level: idDose 
-#              lower     est.    upper
-# sd(time) 0.7411939 1.062889 1.524207
-# 
-#  Within-group standard error:
-#    lower     est.    upper 
-# 1.101657 1.368545 1.700088 
-# summary(cows.lme.Slop.birth)
-# Random effects:
-#  Formula: ~0 + time | idDose
-#             time Residual
-# StdDev: 1.062889 1.368545
-# 
-# Fixed effects: pcv ~ time + dose + nbirth 
-#                 Value Std.Error DF   t-value p-value
-# (Intercept) 14.690556 0.9192838 46 15.980436  0.0000
-# time         3.550190 0.2987781 46 11.882363  0.0000
-# doseM        0.235266 0.7660959 25  0.307098  0.7613
-# doseH        0.956462 0.7418506 25  1.289292  0.2091
-# nbirth      -0.333844 0.1543805 25 -2.162476  0.0403
+```{r, results='asis'}
+cows.lme.Slop <- update(cows.lme.Slop, method = "ML")
+cows.lme.Slop.birth <- update(cows.lme.Slop, fixed  = ~ . + nbirth, method = "ML")
+cows.lme.Slop.birth <- update(cows.lme.Slop.birth, method = "REML")
+
+intervals(cows.lme.Slop.birth)
+
+summary(cows.lme.Slop.birth)
+
 ```
 
 The parameter estimates for the model are included in Table XX along with their corresponding p-value. The intercept (14.69) represents the mean PCV value at time 1 for a cow treated with low dose. The parameter estimates for the medium dose and high dose are not significant. This result disagree with all previous data exploration and models. It seems that using the model simplification with _idDose_ does not take into acount _id_ variability.
@@ -550,7 +536,7 @@ ranEfDf <- separate(ranEfDf, idDose, c("id", "dose"), remove = FALSE)
 ranEfDf$dose <- factor(ranEfDf$dose, levels = c("L", "M", "H"))
 qplot(time, id, data = ranEfDf, color = dose, size = I(4))
 ```
-TODO(Lluís): Add confidence intervals
+TODO(Llu?s): Add confidence intervals
 
 TODO(Mathieu): Add figure text
 
