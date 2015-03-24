@@ -616,6 +616,7 @@ TODO(Mathieu): Explain Further research
 
 We did not explore interaction between time and dose in the linear mixed models.
 Imputate missing data.
+Try more correlation strctures or try to get the correct one.
 Contact researchers for info about assumptions. Explore possiblity to add more covariates.
 
 
