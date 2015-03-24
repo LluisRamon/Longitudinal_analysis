@@ -30,7 +30,7 @@ cows$dose <- factor(cows$dose, levels = c("L", "M", "H"))
 
 Cattle are an important economic resource and also a major health factor in many countries. Therefore preventing diseases in a herd is vital. 
 
-In this study we focus our interest on the parasite of trypanosomosis which can lead to the death of a cow. This disease, transmitted by the tsetse flies, causes an infection characterized by fever, loss of apetite and anaemia, which can lead to death depending on different factors.
+In this study we focus our interest on the parasite of trypanosomosis which can lead to the death of a cow. This disease, transmitted by the tsetse flies, causes an infection characterized by fever, loss of appetite and anemia, which can lead to death depending on different factors.
 
 One medicine, the Berenil, is used to cure the infected cattle. The aim of this research is to determine the efficiency of different doses of Berenil. Finding the most efficient dose, if such a dose exists, is critical when it comes to save both cattle and money. Here lies all the interest of our study. 
 
@@ -52,31 +52,31 @@ The variables reported for this study are presented below.
 * Time: From 1 to 3. _(time)_
 * Number of birth: From 2 to 8. _(nbirth)_
 
-Since the gathering process of the data was unkonw, several assumptions were needed.
+Since the gathering process of the data was unknown, several assumptions were needed.
 
 * Each time PCV is obtained before the treatment. Therefore the effect of the third dose could not be evaluated.
 * Dose is assigned randomly in time to the cow.
 * For a given cow, the previous treatments (high, medium or low) do not affect the following ones.
-* Missings are complitely at random.
+* Missing are completely at random.
 * Time intervals are the same and fixed.
 
 # Statistical methods
 
-The methods used in the statistical analyses are detailled in this section. First a multivariate model was fitted, then a two stage analysis and finally a random effect model. An exploratory data analysis was performed before those regression methods.
+The methods used in the statistical analyses are detailed in this section. First a multivariate model was fitted, then a two stage analysis and finally a random effect model. An exploratory data analysis was performed before those regression methods.
 
 ## Multivariate model
 
-Despite the fact of not being the optimal choice, a multivariate linear model was fitted to the data. It seems reasonable to think that observations are not independent, since they are comming from the same cow. However, this model could also led to some interesting results.
+Despite the fact of not being the optimal choice, a multivariate linear model was fitted to the data. It seems reasonable to think that observations are not independent, since they are coming from the same cow. However, this model could also led to some interesting results.
 
 The response variable was PCV since the severity the disease was evaluated by this parameter. As we wanted to estimate the effect of dose in diseased cows in time, these two variables were included in the model. 
 
-From this initial model, a forward stepwise method was carried for the model selection, including additional covariates or interactions between them. The models were compared using F-test. This procedure was followed until no other covariates or interactions below 3rd order could be added, because they would not produce a significantly better model. Leading this to the most parsimonious model with all significant variables.
+From this initial model, a forward step-wise method was carried for the model selection, including additional covariates or interactions between them. The models were compared using F-test. This procedure was followed until no other covariates or interactions below 3rd order could be added, because they would not produce a significantly better model. Leading this to the most parsimonious model with all significant variables.
 
-A validation of the model was performed to check that the residuals were normal, homoscedastic and independent between them and to other rellevant covariates. 
+A validation of the model was performed to check that the residuals were normal, homoscedastic and independent between them and to other relevant covariates. 
 
 ## Two-stage analysis
 
-A Two-stage analysis was performed to take into acount variability between subjects.
+A Two-stage analysis was performed to take into account variability between subjects.
 
 In the first stage model, 3 linear regression models were done for each subject separately, one for each dose (High, Medium, Low).  The response variable  was PVC and time the covariate. 
 
@@ -84,7 +84,7 @@ In the second stage model, a linear regression model was fitted for the subject-
 
 ## Random-effects model
 
-Since the Two Stage model didn't take into acount the within subjects variability, a Random-effects model was fitted. 
+Since the Two Stage model didn't take into account the within subjects variability, a Random-effects model was fitted. 
 
 It distinguishes the mean structure of the covariates as a fixed effect and also some variability between and within subjects as a random effects. It allows more flexibility to model.
 
@@ -96,7 +96,7 @@ In order to select the best model the following methodology was used.
 
 To compare different models the same estimation method was needed. In case of nested fixed effects a Maximum Likelihood method was used. Whenever there were random effects Restricted Maximum Likelihood was used. To chose the best model a Likelihood Ratio test was performed. If it was significant we kept the new variable or random effect. If not we drop it to obtain a more parsimonious model.
 
-A validation of the model was performed to check that the residuals were normal, homoscedastic and independent between them and to other rellevant covariates. 
+A validation of the model was performed to check that the residuals were normal, homoscedastic and independent between them and to other relevant covariates. 
 
 
 # Summary statistics
@@ -111,7 +111,7 @@ qplot(factor(time), pcv, data = cows, group = id, geom = "line", facets = .~ dos
 
 PCV values seem similar for each dose at time 1, which makes sense with several assumptions previously stated. Especially the fact that the PCV is taken before treatment. The unfinished evolutions in Figure \ref{fig:qplot} represent missing values in the data, more details about missing data are reported in the section \ref{sec:Missings}. Notice that several cows with low PCV values in Low dose also have low PCV values in the other doses. 
 
-Cows treated with high doses tend to have a better evoloution in their PCV values. One could also think that time has an influence on the PCV in the way that the effect of the second dose seems to be less important than the first one. 
+Cows treated with high doses tend to have a better evolution in their PCV values. One could also think that time has an influence on the PCV in the way that the effect of the second dose seems to be less important than the first one. 
 
 
 The mean influence of the covariate *time* is expected to be positive. Indeed one expects to higher PCV values after treatment. Also the High dose is expected to be more efficient than the Medium and Low one. This can be verified in Figure \ref{fig:boxplot_time_dose}.
@@ -123,7 +123,7 @@ ggplot(aes(timeDose, pcv, fill = dose), data = cows) + geom_boxplot()
 cows$timeDose <- NULL
 ```
 
-In Figure \ref{fig:boxplot_time_dose} it can be apreciated that there is not a big difference between the low and the medium doses. However the High dose is much better than the others. For instance the mean PCV value at time 2 for the High dose is bigger than mean PCV value at time 3 for the Medium or Low dose.
+In Figure \ref{fig:boxplot_time_dose} it can be appreciated that there is not a big difference between the low and the medium doses. However the High dose is much better than the others. For instance the mean PCV value at time 2 for the High dose is bigger than mean PCV value at time 3 for the Medium or Low dose.
 
 ## Number of births
 
@@ -147,7 +147,7 @@ missingsTable <- 10 - table(cows.com$dose, cows.com$time)
 xtable(missingsTable, digits = 0, caption = "Number of missings in PCV for time and dose")
 ```
 
-It seems to be a contradiction with the assumption that missings are randomly distributed. In the study all those missings will be removed and not further analyzed nor imputed.
+It seems to be a contradiction with the assumption that missing are randomly distributed. In the study all those missings will be removed and not further analyzed nor imputed.
 
 ## Correlation structure
 
@@ -276,13 +276,13 @@ summary(model2)
 anova(model2)
 ```
 
-Table \ref{taulamodels} summarizes the results of the estimation of the parameters of all models. The model selection which was used is the forward stepwise method. The last model corresponds to the most parsimonious one. It is the one that better explains the data, here is its specification:
+Table \ref{taulamodels} summarizes the results of the estimation of the parameters of all models. The model selection which was used is the forward step-wise method. The last model corresponds to the most parsimonious one. It is the one that better explains the data, here is its specification:
 
 $$
 PCV= 15.82 + 2.43X_{time} -0.32X_{doseM} -1.31X_{doseH} -0.34X_{nbirth} + 0.48X_{doseM}X_{time} + 2.35X_{doseH}X_{time}
 $$
 
-Although the coefficients for the additive effects for both doses are negative, when adding the interaction term it ensures a possitive effect. The difference in PCV for the same cows treated with high dose with respect to low dose will be:
+Although the coefficients for the additive effects for both doses are negative, when adding the interaction term it ensures a positive effect. The difference in PCV for the same cows treated with high dose with respect to low dose will be:
 
 $$
 PCV(X_{doseH}=1)-PCV(X_{doseL}=1) = -1.31+2.35X_{time} 
@@ -295,7 +295,7 @@ PCV(X_{doseM}=1)-PCV(X_{doseL}=1) = -0.32+0.48X_{time}
 $$
 
 Here the effect of the dose changes with the time in a synergistic way. 
-Also, time has a possitive effect in the PCV(p$<$0.00001). However the number of births seems to have a significant negative effect in the PCV (p=0.01).
+Also, time has a positive effect in the PCV(p$<$0.00001). However the number of births seems to have a significant negative effect in the PCV (p=0.01).
 
 
 
@@ -446,7 +446,7 @@ Since variability is lost in the Two stage analysis, a linear mixed model is per
 As explained in the section X, a starting model was fitted. Then several alternative models including a random effect were fitted. Table X summarizes the model selection process for the selection of a random effects structure.
 
 TODO(Gerard): Create table.
-id, model, AIC, p-valude
+id, model, AIC, p-value
 
 ```{r, results='asis'}
 # Fixed effect
@@ -481,7 +481,7 @@ $(\beta_{0} + b_{0i}) +  \beta_{1}time + \beta_2 doseMedium + \beta_3 doseHigh +
 
 Table X includes different models with their comparison against the reference model. An information criterion (AIC) and the corresponding p-value is also included. Model 0 was the starting and reference model with only fixed effects. At model 1 a random effect was added at the time and for model 2 it was added at the intercept.
 
-The models that included the random effect were significantly better than the reference one. In order to compare the two remaining models, the AIC was used because they were not nested and a LRT could not be performed. In this case model 2 was prefered as having lower AIC.
+The models that included the random effect were significantly better than the reference one. In order to compare the two remaining models, the AIC was used because they were not nested and a LRT could not be performed. In this case model 2 was preferred as having lower AIC.
 
 In following steps variable nbirth was included in the model (p = XXX). Neither adding of random effects nor including a correlation structure was significant. In order to have the most parsimonious model the following one was selected:
 
@@ -536,7 +536,7 @@ qplot(time, id, data = ranEfDf, color = dose, size = I(4))
 ```
 TODO(Llu?s): Add confidence intervals
 
-Those random effects modify the effect of time for each cow. The slope of time is modified by the random effect for the _id_ and then by the random effect for the _dose_. The figure XX shows these values. A positive value means that, within the cow, the considerated dose has a positive effect on the mean slope time, that is to say on the effect of time on PCV. One can notice that the high dose almost always has a value superior to the medium or low dose. Once again the efficiency of the high dose is shown to be superior to the one of the other doses. 
+Those random effects modify the effect of time for each cow. The slope of time is modified by the random effect for the _id_ and then by the random effect for the _dose_. The figure XX shows these values. A positive value means that, within the cow, the considered dose has a positive effect on the mean slope time, that is to say on the effect of time on PCV. One can notice that the high dose almost always has a value superior to the medium or low dose. Once again the efficiency of the high dose is shown to be superior to the one of the other doses. 
 
 Whenever the value of the random effect for the high dose is lower than the one for the other doses it can be explain by the data. In fact it is either due to missing values or a really specific cow. For instance cow 4 has a lower PCV value after time 2 for the high dose.
 
@@ -554,7 +554,7 @@ Giving birth is supposed to weaken the cow, besides *nbirth* is also an indicato
 
 # Limitations and Further research
 
-The relative low number of observations in the dataset makes difficult the analysis because as soon as a cow has particular results it influences a lot the results. A lot of assumptions were needed to study the data. In order to verify whether or not those assumptions can be validated we would have needed more onformation on the dataset. For instance the reason why values are missing could have helped us give a better intrepation of the results of the random effects of the linear mixed model. 
+The relative low number of observations in the dataset makes difficult the analysis because as soon as a cow has particular results it influences a lot the results. A lot of assumptions were needed to study the data. In order to verify whether or not those assumptions can be validated we would have needed more information on the dataset. For instance the reason why values are missing could have helped us give a better interpretation of the results of the random effects of the linear mixed model. 
 
 
 TODO(All): Revise comments
