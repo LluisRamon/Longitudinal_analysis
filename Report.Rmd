@@ -421,7 +421,8 @@ Parameters            & Estimate (p-value)       \\
 \hline
 $\beta_{0}$ (Intercept)  & 15.1300 (\textless 2e-16) \\
 $\beta_{1}$ (doseMedium) & -0.6448 (0.5237)         \\
-$\beta_{2}$ (doseHigh)   &  -2.0667 (0.0429)   \\            
+$\beta_{2}$ (doseHigh)   &  -2.0667 (0.0429)   \\   
+\hline
 \end{tabular}
 \caption{Two-stage analysis results of model fitting of $\beta_{0ij}$}
 \label{tab::Two_stage_intercept}
@@ -438,7 +439,8 @@ Parameters   & Estimate (p-value)       \\
 \hline
 $\beta_{3}$ (Intercept)   & 2.1500 (0.000438)  \\
 $\beta_{4}$ (doseMedium) &  0.4500 (0.540909)  \\
-$\beta_{5}$ (doseHigh)  &  2.6300 (0.001083)  \\      
+$\beta_{5}$ (doseHigh)  &  2.6300 (0.001083)  \\
+\hline
 \end{tabular}
 \caption{Two-stage analysis results of model fitting of $\beta_{1ij}$}
 \label{tab::Two_stage_slope}
