@@ -315,19 +315,19 @@ Also, time has a positive effect in the PCV(p$<$0.00001). However the number of 
 \hline
 Formula & Variables & Estimate & Std. Error & t value & Pr($>$$|$t$|$) \\ 
   \hline
-pcv\~{}time + dose & (Intercept) & 12.32 & 0.83 & 14.78 & $<$0.00001 \\ 
+pcv $\sim$ time + dose & (Intercept) & 12.32 & 0.83 & 14.78 & $<$0.00001 \\ 
    & time & 3.55 & 0.37 & 9.63 & $<$0.00001 \\ 
    & doseM & 0.56 & 0.75 & 0.75 & 0.45 \\ 
    & doseH & 3.2 & 0.72 & 4.47 & 0.00003 \\ 
    &  &  &  &  &  \\ 
-  pcv\~{}time * dose & (Intercept) & 14.51 & 1.29 & 11.28 & $<$0.00001 \\ 
+  pcv $\sim$ time * dose & (Intercept) & 14.51 & 1.29 & 11.28 & $<$0.00001 \\ 
    & time & 2.28 & 0.68 & 3.34 & 0.001 \\ 
    & doseM & -0.47 & 1.81 & -0.26 & 0.79 \\ 
    & doseH & -1.45 & 1.73 & -0.84 & 0.41 \\ 
    & time:doseM & 0.65 & 0.93 & 0.7 & 0.48 \\ 
    & time:doseH & 2.5 & 0.87 & 2.87 & 0.005 \\ 
    &  &  &  &  &  \\ 
-  pcv\~{}time * dose + nbirth & (Intercept) & 15.85 & 1.35 & 11.74 & $<$0.00001 \\ 
+  pcv $\sim$ time * dose + nbirth & (Intercept) & 15.85 & 1.35 & 11.74 & $<$0.00001 \\ 
    & time & 2.43 & 0.66 & 3.67 & 0.0005 \\ 
    & doseM & -0.32 & 1.75 & -0.18 & 0.86 \\ 
    & doseH & -1.31 & 1.67 & -0.78 & 0.44 \\ 
