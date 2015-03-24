@@ -6,6 +6,7 @@ output:
   pdf_document:
     fig_caption: yes
     number_sections: yes
+    toc: yes
 ---
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
@@ -450,9 +451,6 @@ Since variability is lost in the Two stage analysis, a linear mixed model is per
 
 As explained in the section X, a starting model was fitted. Then several alternative models including a random effect were fitted. Table X summarizes the model selection process for the selection of a random effects structure.
 
-TODO(Gerard): Create table.
-id, model, AIC, p-value
-
 ```{r, results='asis'}
 # Fixed effect
 cows.gls <- gls(pcv ~ time + dose, data = cows.com, method = "REML")
@@ -491,9 +489,6 @@ The models that included the random effect were significantly better than the re
 In following steps variable nbirth was included in the model (p = XXX). Neither adding of random effects nor including a correlation structure was significant. In order to have the most parsimonious model the following one was selected:
 
 $$PCV_{i} = \beta_{0} + (\beta_{1} + b_{1i})time + \beta_2 doseMedium + \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}$$
-
-TODO(Gerard): Table with coefficients, intervals and p-values.
-Include also random effect.
 
 ```{r, results='asis'}
 cows.lme.Slop <- update(cows.lme.Slop, method = "ML")
