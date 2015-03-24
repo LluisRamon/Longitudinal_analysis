@@ -550,12 +550,10 @@ randomEffects <- ranef(cows.lme.nested)
 ranEfDf <- randomEffects$dose
 ranEfDf <- add_rownames(ranEfDf, "idDose")
 ranEfDf <- separate(ranEfDf, idDose, c("id", "dose"), remove = FALSE)
-ranEfDf$dose <- factor(ranEfDf$dose, labels = c("Low", "Medium", "High"))
-qplot(time, id, data = ranEfDf, color = dose, size = I(4)) + theme(legend.title=element_blank()) +
-  xlab("Random effect in time")
-
-# qplot(id, time, data = ranEfDf, color = dose, size = I(4)) + theme(legend.title=element_blank()) +
-#   ylab("Random effect in time")
+ranEfDf$dose <- factor(ranEfDf$dose, levels = c("L", "M", "H"))
+ranEfDf$doseExt <- factor(ranEfDf$dose, labels = c("Low", "Medium", "High"))
+qplot(time, id, data = ranEfDf, color = doseExt, size = I(4)) + theme(legend.title=element_blank()) +
+  xlab("Random effect for time")
 ```
 
 Those random effects modify the effect of time for each cow. The slope of time is modified by the random effect for the _id_ and then by the random effect for the _dose_. The figure XX shows these values. A positive value means that, within the cow, the considered dose has a positive effect on the mean slope time, that is to say on the effect of time on PCV. One can notice that the high dose almost always has a value superior to the medium or low dose. Once again the efficiency of the high dose is shown to be superior to the one of the other doses. 
