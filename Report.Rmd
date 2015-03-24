@@ -499,10 +499,41 @@ Include also random effect.
 cows.lme.Slop <- update(cows.lme.Slop, method = "ML")
 cows.lme.Slop.birth <- update(cows.lme.Slop, fixed  = ~ . + nbirth, method = "ML")
 cows.lme.Slop.birth <- update(cows.lme.Slop.birth, method = "REML")
+intr <- intervals(cows.lme.Slop.birth)
 
-intervals(cows.lme.Slop.birth)
+val.brackets <- function(valuesvect, lower=NULL, upper=NULL, between="-"){
+  
+  return(
+    if(!is.null(upper) & !is.null(lower)) paste(valuesvect, " (", lower, between, upper, ")", sep="")
+    else if(is.null(upper) & !is.null(lower)) paste(valuesvect, "(", lower, ")", sep="")
+    else if(is.null(upper) & is.null(lower)) paste(valuesvect[,1], " (", valuesvect[,2], between, valuesvect[,3], ")", sep="")
+  )
+}
 
-summary(cows.lme.Slop.birth)
+taula.intervals <- matrix(nrow=10, ncol=3)
+colnames(taula.intervals) <- c(" ", "Parameter", "Estimate (95% CI)")
+
+taula.intervals[1,1] <- "Fixed Effects:"
+taula.intervals[2:6,2] <- rownames(intr$fixed)
+taula.intervals[2:6,3] <- val.brackets(round(intr$fixed[,c(2,1,3)],2), between=", ")
+taula.intervals[7,1] <- "Random Effects:"
+taula.intervals[8,2] <- "idDose:"
+taula.intervals[9,2] <- rownames(intr[[2]]$idDose)
+taula.intervals[9,3] <- val.brackets(round(intr[[2]]$idDose[c(2,1,3)],2), between=", ")
+taula.intervals[10,1] <- "Within-group standard error:"
+taula.intervals[10,3] <- val.brackets(round(intr[[3]][2],2), round(intr[[3]][1],2), round(intr[[3]][3],2), between=", ")
+
+
+sumslope <- summary(cows.lme.Slop.birth)
+taula.sumslope <- matrix(nrow=10, ncol=7)
+colnames(taula.sumslope) <- c("", "Parameters", colnames(sumslope$tT))
+taula.sumslope[2:6,2] <- rownames(sumslope$tT)
+taula.sumslope[1,1] <- "Fixed Effects:"
+taula.sumslope[2:6,3:6] <- round(sumslope$tT[,-5],3)
+taula.sumslope[2:6,7] <- round.pval(sumslope$tT[,5])
+
+taula <- cbind(taula.intervals, taula.sumslope[, 4:7])
+print(xtable(taula, label="intervals", caption="Summary of the estimations for the parameters for the random slope model adding the number of births."), include.rownames=F, comment = FALSE)
 
 ```
 
