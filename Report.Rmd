@@ -501,18 +501,16 @@ summary(cows.lme.Slop.birth)
 
 ```
 
-The parameter estimates for the model are included in Table XX along with their corresponding p-value. The intercept (14.69) represents the mean PCV value at time 1 for a cow treated with low dose. The parameter estimates for the medium dose and high dose are not significant. This result disagree with all previous data exploration and models. It seems that using the model simplification with _idDose_ does not take into acount _id_ variability.
+The parameter estimates for the model are included in Table XX along with their corresponding p-value. The intercept (14.69) represents the mean PCV value at time 1 for a cow treated with low dose. The parameter estimates for the medium dose and high dose are not significant. This result disagree with all previous data exploration and models. It seems that using the model simplification with _idDose_ does not take into account _id_ variability.
 
-TODO(Mathieu): Revise sentences
-
-In Figure XX it can be seen the mean slope $\beta_{1} = 3.55$. The random effect $b_{1i} = 1.06$ can be seen in the greyed part of the graph. As example _idDose_ slopes are present for cows 4_H, 3_M, 8_L.
+Figure XX shows the mean slope $\beta_{1} = 3.55$. The random effect $b_{1i} = 1.06$ can be seen in the grey part of the graph. For instance _idDose_ slopes are present for cows 4_H, 3_M, 8_L.
 
 
 ```{r}
 # TODO(Lluis): plot with beta and random effect.
 ```
 
-As it can be seen in Figure XX and Table XX $b_{1i}$ is the variability added to the mean slope in time depending on each _idDose_. It means that the effect of time is different for each _idDose_. For instance, if a given cow had a positve random effect, time would have a bigger slope. Time has always a positive impact on PCV for each _idDose_.
+As shown in Figure XX and Table XX, $b_{1i}$ is the variability added to the mean slope in time depending on each _idDose_. It means that the effect of time is different for each _idDose_. For instance, if a given cow had a positive random effect, time would have a bigger slope. Whatever the value $b_{1i}$ is, time has always a positive impact on PCV.
 
 ### Mixed effect model with id and nested dose
 
@@ -520,13 +518,13 @@ As it can be seen in Figure XX and Table XX $b_{1i}$ is the variability added to
 cows.lme.nested <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|id/dose, data = cows.com)
 ```
 
-Keeping the same model as it was detected in previous section, the grouping was changed to id/dose in order to get the variability of each id. In this way we are getting a random effect for each id and each id and dose. The second random effect differencies the effect of time within each cow depending on the kind of doses that was administrated.
+The model selected in the previous section was kept. Whereas the grouping was initially performed on _idDose_ it is now done on _id_ then _dose_. The point is to get the variability for each id then the variability within each _id_ for each dose. In this way we are getting a random effect for _id_ and for _dose_ in _id_. The second random effect differences the effect of time within each cow depending on the kind of doses that was administrated.
 
 $PCV_{ij} = \beta_{0} + (\beta_{1} + b_{1i} + b_{1ij})time + \beta_2 doseMedium + \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}$ and $\epsilon_{i} \sim N(0, \Sigma_ij)$ i stands for id, j stands fore dose.
 
-The estimates of this model dos'nt change much from previous model. Basically the estimate for medium dose is 0.297 (p = 0.6680) and for high dose is 1.671 (0.021). With this model dose high is significant and positive effect. 
+The parameters estimates of this model do not change much from previous model. Basically the estimate for medium dose is 0.297 (p = 0.6680) and 1.671 (p = 0.021) for high dose. With this model the high dose is significant and has a positive effect on pcv.
 
-In Figure XX it can be seen the effect of the random effect for each cow and each dose in the cow.
+Figure XX shows the random effect of each dose within the cows.
 
 ```{r}
 randomEffects <- ranef(cows.lme.nested)
@@ -538,9 +536,9 @@ qplot(time, id, data = ranEfDf, color = dose, size = I(4))
 ```
 TODO(Llu?s): Add confidence intervals
 
-TODO(Mathieu): Add figure text
+Those random effects modify the effect of time for each cow. The slope of time is modified by the random effect for the _id_ and then by the random effect for the _dose_. The figure XX shows these values. A positive value means that, within the cow, the considerated dose has a positive effect on the mean slope time, that is to say on the effect of time on PCV. One can notice that the high dose almost always has a value superior to the medium or low dose. Once again the efficiency of the high dose is shown to be superior to the one of the other doses. 
 
-In Figure XX all 
+Whenever the value of the random effect for the high dose is lower than the one for the other doses it can be explain by the data. In fact it is either due to missing values or a really specific cow. For instance cow 4 has a lower PCV value after time 2 for the high dose.
 
 
 TODO(Gerard): Model validation
@@ -548,14 +546,17 @@ TODO(Gerard): Model validation
 
 # Discussion
 
-TODO(Mathieu): First version
 TODO(All): Revise comments
 
-Giving birth is supposed to weaken the cow, besides *nbirth* is also an indicator of how old the cow is.
+The main objective of this study was to assess the efficiency of the different kinds of doses used to cure cows infected with the trypanosomosis parasite. As expected _time_ and _dose_ have a positive effect on PCV. However the effect of the dose varies with the kind of doses used. When comparing doses to the low dose as a reference it appears that the medium dose has not an effect significantly different from the low one. However the high dose is much more efficient. This is true when analysing the mean effect in a multivariate model and also for each cow when performing a linear mixed model.
+
+Giving birth is supposed to weaken the cow, besides *nbirth* is also an indicator of how old the cow is. Hence we should find a negative relation between the number of births and the PCV. First such a relation did not appear clearly in the descriptive analysis but models showed that indeed the number of births has a negative impact on the PCV.
 
 # Limitations and Further research
 
-TODO(Mathieu): First version
+The relative low number of observations in the dataset makes difficult the analysis because as soon as a cow has particular results it influences a lot the results. A lot of assumptions were needed to study the data. In order to verify whether or not those assumptions can be validated we would have needed more onformation on the dataset. For instance the reason why values are missing could have helped us give a better intrepation of the results of the random effects of the linear mixed model. 
+
+
 TODO(All): Revise comments
 
 # Bibliography
