@@ -109,7 +109,7 @@ A validation of the model was performed to check that the residuals were normal,
 
 In this part the aim is to have some insights about the data. By performing a basic statistical analysis some relations between the explaining variables and the response one would emerged. A first idea on how we can explain the response variable and also some answers when it comes to discovering the most efficient dose.
 
-```{r qplot, fig.cap = "PCV evolution for each cow on every dose. Cows are colored in the same fashion for each dose. \\label{fig:qplot}", fig.pos = "H"}
+```{r qplot, fig.cap = "PCV evolution for each cow on every dose. Cows are colored in the same fashion for each dose. \\label{fig:qplot}", fig.pos = "H", fig.height = 3, fig.width = 7}
 qplot(factor(time), pcv, data = cows, group = id, geom = "line", facets = .~ doseExt, 
       colour = factor(id)) + scale_color_discrete(guide = 'none') + xlab("time") + ylab("PCV value")
 ```
@@ -122,7 +122,7 @@ Cows treated with high doses tend to have a better evolution in their PCV values
 
 The mean influence of the covariate *time* is expected to be positive. Indeed one expects to higher PCV values after treatment. Also the High dose is expected to be more efficient than the Medium and Low one. This can be verified in Figure \ref{fig:boxplot_time_dose}.
 
-```{r boxplot, fig.cap = "Boxplot of PCV values for each time and dose. \\label{fig:boxplot_time_dose}", fig.pos = "H"}
+```{r boxplot, fig.cap = "Boxplot of PCV values for each time and dose. \\label{fig:boxplot_time_dose}", fig.pos = "H", fig.height = 4, fig.width = 6}
 cows$timeDose <- paste(cows$time, cows$dose, sep = ".")
 cows$timeDose <- factor(cows$timeDose, levels = c("1.L", "2.L", "3.L", "1.M", "2.M", "3.M", "1.H", "2.H", "3.H"))
 ggplot(aes(timeDose, pcv, fill = doseExt), data = cows) + geom_boxplot() +
@@ -551,7 +551,7 @@ The parameter estimates for the model are included in Table \ref{tab:table_lme_p
 Figure \ref{slope_graph} shows the mean slope $\beta_{1} = 3.55$. The random effect $b_{1i} = 1.06$ can be seen in the grey part of the graph. For instance _idDose_ slopes are present for cows 5_L, 8_H, 9_M.
 
 
-```{r slope_graph, fig.cap = "TODO(Mathieu) Something about the plot \\label{slope_graph}", fig.pos = "H"}
+```{r slope_graph, fig.cap = "TODO(Mathieu) Something about the plot \\label{slope_graph}", fig.pos = "H", fig.height = 4, fig.width = 6}
 cows.lme.Slop.birth <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|idDose, data = cows.com)
 cows.fixef <- fixed.effects(cows.lme.Slop.birth)
 cows.ranef <- ranef(cows.lme.Slop.birth, augFrame = TRUE)[c(1, 17, 29, 24),]
@@ -585,7 +585,7 @@ The parameters estimates of this model do not change much from previous model. B
 
 Figure \ref{random_graph} shows the random effect of each dose within the cows.
 
-```{r random_graph, fig.cap= "TODO(Mathieu). \\label{random_graph}"}
+```{r random_graph, fig.cap= "TODO(Mathieu). \\label{random_graph}", fig.height = 4, fig.width = 6, fig.pos = "H"}
 randomEffects <- ranef(cows.lme.nested)
 ranEfDf <- randomEffects$dose
 ranEfDf <- add_rownames(ranEfDf, "idDose")
