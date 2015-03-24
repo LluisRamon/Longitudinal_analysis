@@ -606,6 +606,12 @@ Giving birth is supposed to weaken the cow, besides *nbirth* is also an indicato
 
 The relative low number of observations in the dataset makes difficult the analysis because as soon as a cow has particular results it influences a lot the results. A lot of assumptions were needed to study the data. In order to verify whether or not those assumptions can be validated we would have needed more information on the dataset. For instance the reason why values are missing could have helped us give a better interpretation of the results of the random effects of the linear mixed model. 
 
+TODO(Mathieu): Explain Further research
+
+We did not explore interaction between time and dose in the linear mixed models.
+Imputate missing data.
+Contact researchers for info about assumptions. Explore possiblity to add more covariates.
+
 
 TODO(All): Revise comments
 
