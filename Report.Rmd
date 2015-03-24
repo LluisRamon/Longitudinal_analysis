@@ -161,12 +161,12 @@ It seems to be a contradiction with the assumption that missing are randomly dis
 ```{r correlation, results = 'asis'}
 library("tidyr")
 cows.w <- spread(cows, time, pcv)
-print(xtable(cor(cows.w[, c("1", "2", "3")], use = "pairwise.complete.obs"), caption = "TODO(Mathieu)"), comment = FALSE, table.placement = "H", include.rownames = FALSE)
+print(xtable(cor(cows.w[, c("1", "2", "3")], use = "pairwise.complete.obs"), caption = "TODO(Mathieu). \\label{tab:correlation}"), comment = FALSE, table.placement = "H", include.rownames = FALSE)
 ```
 
 TODO(Mathieu): Revise text
 
-Correlation structure was calculated for this data between measurements of time. In Figure XX it can be shown there is a positive correlation. Possible correlation structures for this kind of data could be an autoregressive model AR(1) or a Compound Symmetry that implies that all distinct members of a cluster are equally correlated with each other. Total variation can be partitioned into the within a cluster component and the unshared component.
+Correlation structure was calculated for this data between measurements of time. In Table \ref{tab:correlation} it can be shown there is a positive correlation. Possible correlation structures for this kind of data could be an autoregressive model AR(1) or a Compound Symmetry that implies that all distinct members of a cluster are equally correlated with each other. Total variation can be partitioned into the within a cluster component and the unshared component.
 
 # Results
 
@@ -501,7 +501,7 @@ In following steps variable nbirth was included in the model (p = XXX). Neither 
 
 $$PCV_{i} = \beta_{0} + (\beta_{1} + b_{1i})time + \beta_2 doseMedium + \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}$$
 
-```{r, results='asis'}
+```{r table_lme_parametrs, results='asis'}
 cows.lme.Slop <- update(cows.lme.Slop, method = "ML")
 cows.lme.Slop.birth <- update(cows.lme.Slop, fixed  = ~ . + nbirth, method = "ML")
 cows.lme.Slop.birth <- update(cows.lme.Slop.birth, method = "REML")
@@ -539,11 +539,11 @@ taula.sumslope[2:6,3:6] <- round(sumslope$tT[,-5],3)
 taula.sumslope[2:6,7] <- round.pval(sumslope$tT[,5])
 
 taula <- cbind(taula.intervals, taula.sumslope[, 4:7])
-print(xtable(taula, label="intervals", caption="Summary of the estimations for the parameters for the random slope model adding the number of births."), include.rownames = FALSE, comment = FALSE, table.placement = "H")
+print(xtable(taula, label="intervals", caption="Summary of the estimations for the parameters for the random slope model adding the number of births. \\label{tab:table_lme_parametrs}"), include.rownames = FALSE, comment = FALSE, table.placement = "H")
 
 ```
 
-The parameter estimates for the model are included in Table XX along with their corresponding p-value. The intercept (14.69) represents the mean PCV value at time 1 for a cow treated with low dose. The parameter estimates for the medium dose and high dose are not significant. This result disagree with all previous data exploration and models. It seems that using the model simplification with _idDose_ does not take into account _id_ variability.
+The parameter estimates for the model are included in Table \ref{tab:table_lme_parametrs} along with their corresponding p-value. The intercept (14.69) represents the mean PCV value at time 1 for a cow treated with low dose. The parameter estimates for the medium dose and high dose are not significant. This result disagree with all previous data exploration and models. It seems that using the model simplification with _idDose_ does not take into account _id_ variability.
 
 Figure \ref{slope_graph} shows the mean slope $\beta_{1} = 3.55$. The random effect $b_{1i} = 1.06$ can be seen in the grey part of the graph. For instance _idDose_ slopes are present for cows 5_L, 8_H, 9_M.
 
@@ -566,7 +566,7 @@ q <- q + geom_segment(aes(x = 1, xend = 3, y = intercept, yend = yend, colour = 
 q + xlab("time") + ylab("PCV value") + theme(legend.title=element_blank())
 ```
 
-As shown in Figure XX and Table XX, $b_{1i}$ is the variability added to the mean slope in time depending on each _idDose_. It means that the effect of time is different for each _idDose_. For instance, if a given cow had a positive random effect, time would have a bigger slope. Whatever the value $b_{1i}$ is, time has always a positive impact on PCV.
+As shown in Figure \ref{slope_graph} $b_{1i}$ is the variability added to the mean slope in time depending on each _idDose_. It means that the effect of time is different for each _idDose_. For instance, if a given cow had a positive random effect, time would have a bigger slope. Whatever the value $b_{1i}$ is, time has always a positive impact on PCV.
 
 ### Mixed effect model with id and nested dose
 
@@ -580,9 +580,9 @@ $PCV_{ij} = \beta_{0} + (\beta_{1} + b_{1i} + b_{1ij})time + \beta_2 doseMedium 
 
 The parameters estimates of this model do not change much from previous model. Basically the estimate for medium dose is 0.297 (p = 0.6680) and 1.671 (p = 0.021) for high dose. With this model the high dose is significant and has a positive effect on pcv.
 
-Figure XX shows the random effect of each dose within the cows.
+Figure \ref{random_graph} shows the random effect of each dose within the cows.
 
-```{r random_graph}
+```{r random_graph, fig.cap= "TODO(Mathieu). \\label{random_graph}"}
 randomEffects <- ranef(cows.lme.nested)
 ranEfDf <- randomEffects$dose
 ranEfDf <- add_rownames(ranEfDf, "idDose")
@@ -593,7 +593,7 @@ qplot(time, id, data = ranEfDf, color = doseExt, size = I(4)) + theme(legend.tit
   xlab("Random effect for time")
 ```
 
-Those random effects modify the effect of time for each cow. The slope of time is modified by the random effect for the _id_ and then by the random effect for the _dose_. The figure XX shows these values. A positive value means that, within the cow, the considered dose has a positive effect on the mean slope time, that is to say on the effect of time on PCV. One can notice that the high dose almost always has a value superior to the medium or low dose. Once again the efficiency of the high dose is shown to be superior to the one of the other doses. 
+Those random effects modify the effect of time for each cow. The slope of time is modified by the random effect for the _id_ and then by the random effect for the _dose_. Figure \ref{random_graph} shows these values. A positive value means that, within the cow, the considered dose has a positive effect on the mean slope time, that is to say on the effect of time on PCV. One can notice that the high dose almost always has a value superior to the medium or low dose. Once again the efficiency of the high dose is shown to be superior to the one of the other doses. 
 
 Whenever the value of the random effect for the high dose is lower than the one for the other doses it can be explain by the data. In fact it is either due to missing values or a really specific cow. For instance cow 4 has a lower PCV value after time 2 for the high dose. The validation of this model can be seen in the appendix (Figure \ref{nesteddiagnostic}).
 
