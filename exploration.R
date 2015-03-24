@@ -194,6 +194,10 @@ q + geom_abline(intercept = cows.fixef[1], slope = cows.fixef[2]) +
   geom_ribbon(aes(x = x, ymin = ymin, ymax = ymax), data = bdd) + 
   geom_abline(aes(intercept = intercept, slope = time, colour = idDose), data = cows.ranef)
 
+# Validation 
+
+TODO(Gerard): validation part
+
 
 # With block and longitudinal model ---------------------------------------
 
