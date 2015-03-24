@@ -542,10 +542,10 @@ print(xtable(taula, label="intervals", caption="Summary of the estimations for t
 
 The parameter estimates for the model are included in Table XX along with their corresponding p-value. The intercept (14.69) represents the mean PCV value at time 1 for a cow treated with low dose. The parameter estimates for the medium dose and high dose are not significant. This result disagree with all previous data exploration and models. It seems that using the model simplification with _idDose_ does not take into account _id_ variability.
 
-Figure XX shows the mean slope $\beta_{1} = 3.55$. The random effect $b_{1i} = 1.06$ can be seen in the grey part of the graph. For instance _idDose_ slopes are present for cows 4_H, 3_M, 8_L.
+Figure \ref{slope_graph} shows the mean slope $\beta_{1} = 3.55$. The random effect $b_{1i} = 1.06$ can be seen in the grey part of the graph. For instance _idDose_ slopes are present for cows 5_L, 8_H, 9_M.
 
 
-```{r slope_graph, fig.cap = "Something about the plot"}
+```{r slope_graph, fig.cap = "TODO(Mathieu) Something about the plot \\label{slope_graph}"}
 cows.lme.Slop.birth <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|idDose, data = cows.com)
 cows.fixef <- fixed.effects(cows.lme.Slop.birth)
 cows.ranef <- ranef(cows.lme.Slop.birth, augFrame = TRUE)[c(1, 17, 29, 24),]
