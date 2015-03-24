@@ -451,7 +451,7 @@ Since variability is lost in the Two stage analysis, a linear mixed model is per
 
 As explained in the section X, a starting model was fitted. Then several alternative models including a random effect were fitted. Table X summarizes the model selection process for the selection of a random effects structure.
 
-```{r, results='asis'}
+```{r, results='hide'}
 # Fixed effect
 cows.gls <- gls(pcv ~ time + dose, data = cows.com, method = "REML")
 
@@ -472,15 +472,23 @@ taula[,-6] <- round(taula[,-6],3)
 rownames(taula) <- c("Fixed Effects Model", "Random Intercept Model", "Random Slope Model")
 taula[-1,6] <- round.pval(taula[-1,6])
 
-print(xtable(taula, label="anovas:Random_slope_intercept", caption="Anova table comparing the Fixed effects model (no random effects) with the random intercept and the random slope models."), comment = FALSE)
+print(xtable(taula[,-(3:4)], label="anovas:Random_slope_intercept", caption="Anova table comparing the Fixed effects model (no random effects) with the random intercept and the random slope models."), comment = FALSE)
 ```
 
-$\beta_{0} + \beta_{1}time + \beta_2 doseMedium + \beta_3 doseHigh + \epsilon_{i}$ 
-
-$\beta_{0} +  (\beta_{1} + b_{1i})time + \beta_2 doseMedium + \beta_3 doseHigh + \epsilon_{i}$ 
-
-$(\beta_{0} + b_{0i}) +  \beta_{1}time + \beta_2 doseMedium + \beta_3 doseHigh + \epsilon_{i}$
-
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrr}
+  \hline
+ & df & AIC & L.Ratio & p-value \\ 
+  \hline
+$\beta_{0} + \beta_{1}time + \beta_2 doseMedium + \beta_3 doseHigh$ & 5 & 361.32 &  &  \\ 
+ $(\beta_{0} + b_{0i}) +  \beta_{1}time + \beta_2 doseMedium + \beta_3 doseHigh$ & 6 & 352.25 & 11.07 & 0.0009 \\ 
+ $\beta_{0} +  (\beta_{1} + b_{1i})time + \beta_2 doseMedium + \beta_3 doseHigh$ & 6 & 329.37 & 33.95 & <0.00001 \\  
+   \hline
+\end{tabular}
+\caption{Anova table comparing the Fixed effects model (no random effects) with the random intercept and the random slope models.} 
+\label{anovas:Random_slope_intercept}
+\end{table}
 
 Table X includes different models with their comparison against the reference model. An information criterion (AIC) and the corresponding p-value is also included. Model 0 was the starting and reference model with only fixed effects. At model 1 a random effect was added at the time and for model 2 it was added at the intercept.
 
