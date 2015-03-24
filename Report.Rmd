@@ -88,6 +88,7 @@ In the first stage model, 3 linear regression models were done for each subject 
 In the second stage model, a linear regression model was fitted for the subject-specific regression coefficients using dose as a covariate. It was also studied the cow effect or the number of births effect.
 
 ## Random-effects model
+\label{Statistical_methods:RE}
 
 Since the Two Stage model didn't take into account the within subjects variability, a Random-effects model was fitted. 
 
@@ -454,7 +455,7 @@ Since variability is lost in the Two stage analysis, a linear mixed model is per
 
 ### Mixed effect model with _idDose_
 
-As explained in the section X, a starting model was fitted. Then several alternative models including a random effect were fitted. Table X summarizes the model selection process for the selection of a random effects structure.
+As explained in the section \ref{Statistical_methods:RE}, a starting model was fitted. Then several alternative models including a random effect were fitted. Table \ref{anovas:Random_slope_intercept} summarizes the model selection process for the selection of a random effects structure.
 
 ```{r, results='hide'}
 # Fixed effect
@@ -495,7 +496,7 @@ $\beta_{0} + \beta_{1}time + \beta_2 doseMedium + \beta_3 doseHigh$ & 5 & 361.32
 \label{anovas:Random_slope_intercept}
 \end{table}
 
-Table X includes different models with their comparison against the reference model. An information criterion (AIC) and the corresponding p-value is also included. Model 0 was the starting and reference model with only fixed effects. At model 1 a random effect was added at the time and for model 2 it was added at the intercept.
+Table \ref{anovas:Random_slope_intercept} includes different models with their comparison against the reference model. An information criterion (AIC) and the corresponding p-value is also included. Model 0 was the starting and reference model with only fixed effects. At model 1 a random effect was added at the time and for model 2 it was added at the intercept.
 
 The models that included the random effect were significantly better than the reference one. In order to compare the two remaining models, the AIC was used because they were not nested and a LRT could not be performed. In this case model 2 was preferred as having lower AIC.
 
