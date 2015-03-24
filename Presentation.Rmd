@@ -1,0 +1,34 @@
+---
+title: "Study of the efficacy of Berenil applied to trypanosomosis's infected cattle"
+author: "Gerard Castellà, Mathieu Marauri and Lluis Ramon"
+date: "24 de marzo de 2015"
+output: beamer_presentation
+---
+
+## Introduction
+
+TODO(mathieu): Something about disease
+
+> The aim of this study is to assess the efficacy of different doses of Berenil in cattle infected with the trypanosomosis parasite.
+
+## Data set
+
+* 10 cows
+* 3 dosage levels (High, Medium, Low)
+* idDose
+
+## Assumptions
+
+TODO(LLuis): Plot 
+
+## Summary statistics
+
+## Multivariate models
+
+## Two Stage Analysis
+
+## Linear Mixed Models
+
+
+## Conclusion
+
