@@ -147,7 +147,7 @@ There are 14 missing PCV values out of 90 observations in the dataset. Those mis
 ```{r, results = 'asis'}
 cows.com <- na.omit(cows)
 missingsTable <- 10 - table(cows.com$dose, cows.com$time)
-xtable(missingsTable, digits = 0, caption = "Number of missings in PCV for time and dose")
+print(xtable(missingsTable, digits = 0, caption = "Number of missings in PCV for time and dose"), comment = FALSE)
 ```
 
 It seems to be a contradiction with the assumption that missing are randomly distributed. In the study all those missings will be removed and not further analyzed nor imputed.
@@ -157,7 +157,7 @@ It seems to be a contradiction with the assumption that missing are randomly dis
 ```{r correlation, results = 'asis'}
 library("tidyr")
 cows.w <- spread(cows, time, pcv)
-xtable(cor(cows.w[, c("1", "2", "3")], use = "pairwise.complete.obs"))
+print(xtable(cor(cows.w[, c("1", "2", "3")], use = "pairwise.complete.obs"), caption = "TODO(Mathieu)"), comment = FALSE)
 ```
 
 TODO(Mathieu): Revise text
@@ -474,7 +474,7 @@ taula[,-6] <- round(taula[,-6],3)
 rownames(taula) <- c("Fixed Effects Model", "Random Intercept Model", "Random Slope Model")
 taula[-1,6] <- round.pval(taula[-1,6])
 
-print(xtable(taula, label="anovas:Random_slope_intercept", caption="Anova table comparing the Fixed effects model (no random effects) with the random intercept and the random slope models."))
+print(xtable(taula, label="anovas:Random_slope_intercept", caption="Anova table comparing the Fixed effects model (no random effects) with the random intercept and the random slope models."), comment = FALSE)
 ```
 
 $\beta_{0} + \beta_{1}time + \beta_2 doseMedium + \beta_3 doseHigh + \epsilon_{i}$ 
