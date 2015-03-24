@@ -76,7 +76,55 @@ cor(cows.w[cond, c("1", "2", "3")], use = "pairwise.complete.obs")
 
 # Multivariate model ------------------------------------------------------
 
-TODO(Gerard): Add step forward multivariate models
+# dep variable:
+# pcv: the higher the better.
+
+# indep variables:
+# dose: we want to know if the dose is associated with lower PCV
+# nbirth: we want to know if this covariate influences the effect of the dose.
+# time: we dont particularly want to see differences in time, but maybe 
+# 3rd observations of the doses are higher, ...
+
+# we do not want:
+# id: we dont want the effect of the dose to be explained by the cow.
+
+# Each observation of each cow will be considered independent.
+model <- lm(pcv ~ time + dose, data=cows)
+summary(model)
+model0 <- model
+add1(model0, scope=~.^2+nbirth, test="F")
+
+model <- lm(pcv ~ time * dose, data=cows)
+summary(model)
+model1 <- model
+add1(model1, scope=~.^2+nbirth, test="F")
+
+model <- lm(pcv ~ time*dose + nbirth, data=cows)
+summary(model)
+model2 <- model
+add1(model2, scope=~.^2, test="F") #nothing else to add
+drop1(model2, test="F") #nothing to remove
+
+anova(model2)
+
+# dose H has a huge effect, in a possitive way. Also, in general higher
+# times give better PCV values (which is logical). nbirth has a significative
+# negative effect on the PCV.
+# time and dose almost interact for high doses. This interaction is synergistic.
+# higher times and dose H give even higher pcv, but this effect is higher when 
+# combined together.
+
+## diagnostic:
+# high pcv has high positive errors. Doesnt seem to be random.
+plot(model2$residuals, model2$y)
+# problems with doseH
+plot(model2$model$dose, model2$residuals)
+# NO homoscedasticity
+plot(model2$model$time, model2$residuals)
+# not centered
+plot(model2$model$nbirth, model2$residuals)
+## BAD MODEL: we already know that, since obervations are not independent.
+
 
 # Two step modeling -------------------------------------------------------
 
@@ -194,11 +242,6 @@ q + geom_abline(intercept = cows.fixef[1], slope = cows.fixef[2]) +
   geom_ribbon(aes(x = x, ymin = ymin, ymax = ymax), data = bdd) + 
   geom_abline(aes(intercept = intercept, slope = time, colour = idDose), data = cows.ranef)
 
-# Validation 
-
-TODO(Gerard): validation part
-
-
 # With block and longitudinal model ---------------------------------------
 
 cows.lme.nested <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|id/dose, data = cows.com)
@@ -218,3 +261,15 @@ ranEfDf <- separate(ranEfDf, idDose, c("id", "dose"), remove = FALSE)
 
 qplot(time, idDose, data = ranEfDf, color = dose)
 qplot(time, id, data = ranEfDf, color = dose, size = I(4))
+
+
+# Validation 
+
+par(mfrow=c(2,2), mar=c(4,4,2,2), cex=0.6)
+model2 <- cows.lme.nested
+model2$residuals <- predict(model2)-cows.com$pcv
+plot(model2$residuals, model2$y, xlab="residuals", ylab="PCV")
+plot(model2$data$dose, model2$residuals, ylab="residuals", xlab="Dose")
+plot(model2$data$time, model2$residuals, ylab="residuals", xlab="Time")
+plot(model2$data$nbirth, model2$residuals, ylab="residuals", xlab="Number of births (nbirth)")
+
