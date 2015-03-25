@@ -10,14 +10,15 @@ output:
 header-includes:
 - \usepackage{float}
 ---
----
 
-```{r, echo = FALSE, warning = FALSE, message = FALSE}
+
+```{r initial_chunk, echo = FALSE, warning = FALSE, message = FALSE}
 library("knitr")
 library("ggplot2")
 library("xtable")
 library("dplyr")
 library("nlme")
+library("gridExtra")
 opts_chunk$set(echo = FALSE, eval = TRUE, warning = FALSE, message = FALSE)
 ```
 
@@ -351,7 +352,6 @@ v3 <- qplot(model2$model$time, model2$residuals, ylab = "Residuals", xlab = "Tim
   scale_x_discrete(labels = 1:3) + geom_hline(yintercept=0)
 v4 <- qplot(model2$model$nbirth, model2$residuals, ylab = "Residuals", xlab = "Number of births (nbirth)") +
   geom_hline(yintercept=0)
-library("gridExtra")
 grid.arrange(v1, v2, v3, v4, ncol = 2)
 ```
 
@@ -625,18 +625,15 @@ TODO(All): Revise comments
 
 # Appendix
 
-
 ```{r validacio_nested, echo=FALSE, fig.cap='Analyses of the residuals of the nested model.\\label{nesteddiagnostic}', fig.pos = "H"}
-## diagnostic:
-par(mfrow=c(2,2), mar=c(4,4,2,2), cex=0.6)
-model2 <- cows.lme.nested
-model2$residuals <- predict(model2)-cows.com$pcv
-plot(model2$residuals, model2$y, xlab="residuals", ylab="PCV")
-plot(model2$data$dose, model2$residuals, ylab="residuals", xlab="Dose")
-plot(model2$data$time, model2$residuals, ylab="residuals", xlab="Time")
-plot(model2$data$nbirth, model2$residuals, ylab="residuals", xlab="Number of births (nbirth)")
+v1 <- qplot(cows.com$pcv, model2$residuals, xlab = "PCV value", ylab = "Residuals")
+v1 <- v1 + geom_hline(yintercept=0) + geom_smooth(span = 1.2)
+v2 <- qplot(model2$data$dose, model2$residuals, ylab="Residuals", xlab = "Dose", geom = "boxplot", fill = model2$data$dose) + guides(fill = FALSE) + scale_x_discrete(labels = c("Low", "Medium", "High"))
+v3 <- qplot(model2$data$time, model2$residuals, ylab="Residuals", xlab="Time") + 
+  scale_x_discrete(labels = 1:3) + geom_hline(yintercept=0)
+v4 <- qplot(model2$data$nbirth, model2$residuals, ylab = "Residuals", xlab = "Number of births (nbirth)") + geom_hline(yintercept=0)
+grid.arrange(v1, v2, v3, v4, ncol = 2)
 ```
-
 
 TODO: details more or less important
 * first page should only contain the title and our names.
