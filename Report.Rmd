@@ -62,7 +62,7 @@ Since the gathering process of the data was unknown, several assumptions were ne
 * Each time PCV is obtained before the treatment. Therefore the effect of the third dose could not be evaluated.
 * Dose is assigned randomly in time to the cow.
 * For a given cow, the previous treatments (high, medium or low) do not affect the following ones.
-* Missing are completely at random.
+* Missing values are completely at random.
 * Time intervals are the same and fixed.
 
 # Statistical methods
@@ -115,7 +115,7 @@ qplot(factor(time), pcv, data = cows, group = id, geom = "line", facets = .~ dos
 ```
 
 
-PCV values seem similar for each dose at time 1, which makes sense with several assumptions previously stated. Especially the fact that the PCV is taken before treatment. The unfinished evolutions in Figure \ref{fig:qplot} represent missing values in the data, more details about missing data are reported in the section \ref{sec:Missings}. Notice that several cows with low PCV values in Low dose also have low PCV values in the other doses. 
+PCV values seem similar for each dose at time 1, which makes sense with several assumptions previously stated. Especially the fact that the PCV is taken before treatment. The unfinished evolutions in Figure \ref{fig:qplot} represent missing values in the data, more details about missing data are reported in the section \ref{sec:Missing values}. Notice that several cows with low PCV values in Low dose also have low PCV values in the other doses. 
 
 Cows treated with high doses tend to have a better evolution in their PCV values. One could also think that time has an influence on the PCV in the way that the effect of the second dose seems to be less important than the first one. 
 
@@ -137,7 +137,7 @@ In Figure \ref{fig:boxplot_time_dose} it can be appreciated that there is not a 
 
 None of the cows gave birth after time 1 of the first infection. So the number of births remains constant through all doses and times for each cow. 
 
-Some boxplots were performed but it didn't show any clear result, although a tendency may be seen at time 1. A simple regression model was also fit at time 1 with a significant (p = 0.007) a slope  of -0.3444. It may explain the fact that a cow is supposed to be weaker if it had a lot of calves. Latter on the analysis the nbirth effect will be combined with other variables.
+Some boxplots were performed but it didn't show any clear result, although a tendency may be seen at time 1. A simple regression model was also fit at time 1 with a significant (p = 0.007) slope  of -0.3444. It may explain the fact that a cow is supposed to be weaker if it had a lot of calves. Latter on the analysis the nbirth effect will be combined with other variables.
 
 ```{r, eval = FALSE}
 lcowsnbirth <- lm(pcv ~ nbirth, data = cows[cows$time == 1,])
@@ -145,29 +145,28 @@ summary(lcowsnbirth)
 ```
 
 ## Missing data analysis
-\label{sec:Missings}
+\label{sec:Missing values}
 
 There are 14 missing PCV values out of 90 observations in the dataset. Those missing values are equally distributed among doses and time as it is shown in Table 1.
 
 ```{r, results = 'asis'}
 cows.com <- na.omit(cows)
 missingsTable <- 10 - table(cows.com$dose, cows.com$time)
-print(xtable(missingsTable, digits = 0, caption = "Number of missings in PCV for time and dose"), comment = FALSE, , table.placement = "H")
+print(xtable(missingsTable, digits = 0, caption = "Number of missing values in PCV for time and dose"), comment = FALSE, , table.placement = "H")
 ```
 
-It seems to be a contradiction with the assumption that missing are randomly distributed. In the study all those missings will be removed and not further analyzed nor imputed.
+It seems to be a contradiction with the assumption that missing data are randomly distributed. In the study all those missing values will be removed and will not be further analyzed nor imputed.
 
 ## Correlation structure
 
 ```{r correlation, results = 'asis'}
 library("tidyr")
 cows.w <- spread(cows, time, pcv)
-print(xtable(cor(cows.w[, c("1", "2", "3")], use = "pairwise.complete.obs"), caption = "TODO(Mathieu). \\label{tab:correlation}"), comment = FALSE, table.placement = "H", include.rownames = FALSE)
+print(xtable(cor(cows.w[, c("1", "2", "3")], use = "pairwise.complete.obs"), caption = "Time correlation. \\label{tab:correlation}"), comment = FALSE, table.placement = "H", include.rownames = FALSE)
 ```
 
-TODO(Mathieu): Revise text
+This correlation structure was obtained for the time. A positive correlation can be observed in Table \ref{tab:correlation}. This means that a possible correlation structure can be applied to the data. One could use an autoregressive model AR(1) or a Compound Symmetry that implies that all distinct members of a cluster are equally correlated with each other. The total variation can be separated between the variation within cluster and the one between cluster. 
 
-Correlation structure was calculated for this data between measurements of time. In Table \ref{tab:correlation} it can be shown there is a positive correlation. Possible correlation structures for this kind of data could be an autoregressive model AR(1) or a Compound Symmetry that implies that all distinct members of a cluster are equally correlated with each other. Total variation can be partitioned into the within a cluster component and the unshared component.
 
 # Results
 
@@ -180,7 +179,7 @@ Each cow in this dataset was treated three times, hence we will, at the beginnin
 round.pval <- function(pval=stop("p-value not given"), show.sig.stars=FALSE, alpha=0.05){
   
   arrodonir <- function(pval, show.sig.stars, alpha){
-  	
+    
 		if(is.na(pval)) return(NA)
 
 		ndec <- nchar(as.character(signif(alpha,1)))-2
@@ -500,7 +499,7 @@ Table \ref{anovas:Random_slope_intercept} includes different models with their c
 
 The models that included the random effect were significantly better than the reference one. In order to compare the two remaining models, the AIC was used because they were not nested and a LRT could not be performed. In this case model 2 was preferred as having lower AIC.
 
-In following steps variable nbirth was included in the model (p = XXX). Neither adding of random effects nor including a correlation structure was significant. In order to have the most parsimonious model the following one was selected:
+In following steps variable nbirth was included in the model (p = 0.04). Neither adding of random effects nor including a correlation structure was significant. In order to have the most parsimonious model the following one was selected:
 
 $$PCV_{i} = \beta_{0} + (\beta_{1} + b_{1i})time + \beta_2 doseMedium + \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}$$
 
@@ -551,7 +550,7 @@ The parameter estimates for the model are included in Table \ref{tab:table_lme_p
 Figure \ref{slope_graph} shows the mean slope $\beta_{1} = 3.55$. The random effect $b_{1i} = 1.06$ can be seen in the grey part of the graph. For instance _idDose_ slopes are present for cows 5_L, 8_H, 9_M.
 
 
-```{r slope_graph, fig.cap = "TODO(Mathieu) Something about the plot \\label{slope_graph}", fig.pos = "H", fig.height = 4, fig.width = 6}
+```{r slope_graph, fig.cap = "Fixed and random effect of time, with some examples. \\label{slope_graph}", fig.pos = "H", fig.height = 4, fig.width = 6}
 cows.lme.Slop.birth <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|idDose, data = cows.com)
 cows.fixef <- fixed.effects(cows.lme.Slop.birth)
 cows.ranef <- ranef(cows.lme.Slop.birth, augFrame = TRUE)[c(1, 17, 29, 24),]
@@ -585,7 +584,7 @@ The parameters estimates of this model do not change much from previous model. B
 
 Figure \ref{random_graph} shows the random effect of each dose within the cows.
 
-```{r random_graph, fig.cap= "TODO(Mathieu). \\label{random_graph}", fig.height = 4, fig.width = 6, fig.pos = "H"}
+```{r random_graph, fig.cap= "Random effect for time of dose in each id. \\label{random_graph}", fig.height = 4, fig.width = 6, fig.pos = "H"}
 randomEffects <- ranef(cows.lme.nested)
 ranEfDf <- randomEffects$dose
 ranEfDf <- add_rownames(ranEfDf, "idDose")
@@ -612,13 +611,11 @@ Giving birth is supposed to weaken the cow, besides *nbirth* is also an indicato
 
 The relative low number of observations in the dataset makes difficult the analysis because as soon as a cow has particular results it influences a lot the results. A lot of assumptions were needed to study the data. In order to verify whether or not those assumptions can be validated we would have needed more information on the dataset. For instance the reason why values are missing could have helped us give a better interpretation of the results of the random effects of the linear mixed model. 
 
-TODO(Mathieu): Explain Further research
+To clarify the dataset and in a way assumptions are no longer needed, one can contact the person who collected the data. Adding some covariates may also help futur researchers predict PCV values based on the initial condition of a given cow.
+In order to further analyse the data some improvements are possible. Missing values can be imputed so that information is no longer lost in some part of the study. One can also try to find a proper correlation structure to add in the differents models. 
 
+TODO(Mathieu):
 We did not explore interaction between time and dose in the linear mixed models.
-Imputate missing data.
-Try more correlation strctures or try to get the correct one.
-Contact researchers for info about assumptions. Explore possiblity to add more covariates.
-
 
 TODO(All): Revise comments
 
@@ -642,3 +639,16 @@ plot(model2$data$dose, model2$residuals, ylab="residuals", xlab="Dose")
 plot(model2$data$time, model2$residuals, ylab="residuals", xlab="Time")
 plot(model2$data$nbirth, model2$residuals, ylab="residuals", xlab="Number of births (nbirth)")
 ```
+
+
+TODO: details more or less important
+* first page should only contain the title and our names.
+* add some space between section.
+* figure 2 is misplaced, it should be before the paragraph before number of births.
+* table 3 should be after the model (the one after the first paragraph of multivariate model)
+* figure 3 should be before the paragraph before two stage analysis.
+* figure of the two stage analysis is missing.
+* table 4 and 5 should ?aybe be after the paragraphs that give the explaination since we do not introduce the tables.
+* figure 4 should be before the paragraph before Mixed effect model with id and nested dose.
+* figure 5 should not be in middle of the paragraph.
+* Discussion and Limitation and further research should become one section COnclusion. It really weird to not have a conclusion section.
