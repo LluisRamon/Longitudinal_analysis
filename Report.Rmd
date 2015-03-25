@@ -614,6 +614,11 @@ In order to further analyse the data some improvements are possible. Missing val
 TODO(Mathieu):
 We did not explore interaction between time and dose in the linear mixed models.
 
+* May be there is some selection bias. Cows from other regions are not properly modeled. Need more data.
+* We de not have a control. We cannot estimate if some dosage is not needed.
+* It is not clear whici PCV value needed for a cow to be cured.
+
+
 TODO(All): Revise comments
 
 # Bibliography
