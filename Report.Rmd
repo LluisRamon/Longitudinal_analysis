@@ -387,7 +387,7 @@ names(betas) <- c("Intercept", "slope")
 
 betas <- add_rownames(betas, var = "idDose")
 betas.info <- cows.com %>% group_by(idDose, id, dose) %>% summarize(nbirth = mean(nbirth))
-# bdd <- left_join(betas, betas.info)
+bdd <- left_join(betas, betas.info)
 
 # modbeta0 <- lm(Intercept ~ dose, bdd)
 # modbeta1 <- lm(slope ~ dose, bdd)
@@ -402,10 +402,11 @@ Figure \ref{fig:two_stage_graph} shows all the linear regressions done at the fi
 # q <- qplot(factor(time), pcv, group = id, data = cows.com, geom = c("point", "line")) + facet_grid(dose ~ id)
 # q + geom_abline(aes(intercept = Intercept, slope = slope), colour = "red", data = bdd, alpha = 0.8)
 
-# bdd$doseExt <- factor(bdd$dose, labels = c("Low", "Medium", "High"))
+bdd$doseExt <- factor(bdd$dose, labels = c("Low", "Medium", "High"))
+ 
 # Graph option 2
 q <- qplot(factor(time), pcv, group = id, data = cows.com, geom = "point") + facet_grid(.~ doseExt)
-# q + geom_abline(aes(intercept = Intercept, slope = slope, colour = factor(doseExt)), data = bdd) + xlab("time") + ylab("PCV value")
+q + geom_abline(aes(intercept = Intercept, slope = slope, colour = factor(doseExt)), data = bdd) + xlab("time") + ylab("PCV value")
 ```
 
 
@@ -631,6 +632,8 @@ TODO(All): Revise comments
 # Appendix
 
 ```{r validacio_nested, echo=FALSE, fig.cap='Analyses of the residuals of the nested model.\\label{nesteddiagnostic}', fig.pos = "H"}
+model2 <- cows.lme.nested
+model2$residuals <- predict(model2)-cows.com$pcv
 v1 <- qplot(cows.com$pcv, model2$residuals, xlab = "PCV value", ylab = "Residuals")
 v1 <- v1 + geom_hline(yintercept=0) + geom_smooth(span = 1.2)
 v2 <- qplot(model2$data$dose, model2$residuals, ylab="Residuals", xlab = "Dose", geom = "boxplot", fill = model2$data$dose) + guides(fill = FALSE) + scale_x_discrete(labels = c("Low", "Medium", "High"))
@@ -646,7 +649,6 @@ TODO: details more or less important
 * figure 2 is misplaced, it should be before the paragraph before number of births.
 * table 3 should be after the model (the one after the first paragraph of multivariate model)
 * figure 3 should be before the paragraph before two stage analysis.
-* figure of the two stage analysis is missing.
 * table 4 and 5 should ?aybe be after the paragraphs that give the explaination since we do not introduce the tables.
 * figure 4 should be before the paragraph before Mixed effect model with id and nested dose.
 * figure 5 should not be in middle of the paragraph.
