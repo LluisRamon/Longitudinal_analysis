@@ -320,7 +320,7 @@ PCV_{i} = \beta_{0} + (\beta_{1} + b_{1i})time + \beta_2 doseMedium + \\
 \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}
 \end{align*}
 
-# plot
+# Fixed and random effect of time
 
 ```{r slope_graph, fig.cap = "Fixed and random effect of time, with some examples. \\label{slope_graph}", fig.pos = "H", fig.height = 4, fig.width = 6}
 cows.lme.Slop.birth <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|idDose, data = cows.com)
@@ -351,14 +351,35 @@ PCV_{ij} = \beta_{0} + (\beta_{1} + b_{1i} + b_{1ij})time + \\
 \beta_2 doseMedium + \beta_3 doseHigh + \beta_4 numbirths + \epsilon
 \end{align*}
 
-# Table
+# Nested model parameter estimations
 
-TODO(Gerard)
+\footnotesize{
+\begin{table}[H]
+\centering
+\begin{tabular}{lllll}
+  \hline
+  & Parameter & Estimate (95\% CI) & t-value & p-value \\ 
+  \hline
+Fixed Effects: &  &  &  &  \\ 
+   & (Intercept) & 14.34 (12.41, 16.27) & 14.959 & $<$0.00001 \\ 
+   & time & 3.59 (2.91, 4.27) & 10.587 & $<$0.00001 \\ 
+   & doseM & 0.3 (-1.14, 1.74) & 0.437 & 0.67 \\ 
+   & doseH & 1.67 (0.28, 3.07) & 2.527 & 0.02 \\ 
+   & nbirth & -0.33 (-0.72, 0.07) & -1.882 & 0.1 \\ 
+  Random Effects: &  &  &  &  \\ 
+   & id: &  &  &  \\ 
+   & sd(time) & 0.66 (0.28, 1.57) &  &  \\ 
+   & dose in id: &  &  &  \\ 
+   & sd(time) & 0.76 (0.39, 1.46) &  &  \\ 
+  Within-group sd: &  & 1.42 (1.13, 1.79) &  &  \\ 
+   \hline
+\end{tabular}
+\end{table}
+}
 
 # Random effect for time of dose in each id
 
 ```{r random_graph, fig.cap= "Random effect for time of dose in each id.", fig.height = 4, fig.width = 6, fig.pos = "H"}
-cows.lme.nested <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|id/dose, data = cows.com)
 randomEffects <- ranef(cows.lme.nested)
 ranEfDf <- randomEffects$dose
 ranEfDf <- add_rownames(ranEfDf, "idDose")
@@ -374,7 +395,8 @@ qplot(time, id, data = ranEfDf, color = doseExt, size = I(4)) + theme(legend.tit
 # Conclusion
 
 * The high dose is much more efficient.
-* The number of births has a relative negative impact
+* No difference between medium and low dose.
+* The number of births has a relative negative impact.
 
 # Limitations
 
