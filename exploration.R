@@ -5,6 +5,8 @@ library("dplyr")
 library("ggplot2")
 library("tidyr")
 library("corrplot")
+library("grid")
+library("gridExtra")
 
 # Import dataset ----------------------------------------------------------
 cows <- read.table("data/cattle_mes dades.txt", header = TRUE, 
@@ -124,18 +126,6 @@ plot(model2$model$time, model2$residuals)
 # not centered
 plot(model2$model$nbirth, model2$residuals)
 ## BAD MODEL: we already know that, since obervations are not independent.
-
-# Plots with ggplot2
-
-v1 <- qplot(model2$y, model2$residuals, xlab = "PCV value", ylab = "Residuals")
-v1 <- v1 + geom_hline(yintercept=0) + geom_smooth()
-v2 <- qplot(model2$model$dose, model2$residuals, ylab="Residuals", xlab = "Dose", geom = "boxplot", fill = model2$model$dose) + guides(fill = FALSE) + scale_x_discrete(labels = c("Low", "Medium", "High"))
-v3 <- qplot(model2$model$time, model2$residuals, ylab = "Residuals", xlab = "Time") + 
-  scale_x_discrete(labels = 1:3) + geom_hline(yintercept=0)
-v4 <- qplot(model2$model$nbirth, model2$residuals, ylab = "Residuals", xlab = "Number of births (nbirth)") +
-  geom_hline(yintercept=0)
-grid.arrange(v1, v2, v3, v4, ncol = 2)
-
 
 # Two step modeling -------------------------------------------------------
 
