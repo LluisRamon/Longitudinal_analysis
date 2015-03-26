@@ -125,6 +125,17 @@ plot(model2$model$time, model2$residuals)
 plot(model2$model$nbirth, model2$residuals)
 ## BAD MODEL: we already know that, since obervations are not independent.
 
+# Plots with ggplot2
+
+v1 <- qplot(model2$y, model2$residuals, xlab = "PCV value", ylab = "Residuals")
+v1 <- v1 + geom_hline(yintercept=0) + geom_smooth()
+v2 <- qplot(model2$model$dose, model2$residuals, ylab="Residuals", xlab = "Dose", geom = "boxplot", fill = model2$model$dose) + guides(fill = FALSE) + scale_x_discrete(labels = c("Low", "Medium", "High"))
+v3 <- qplot(model2$model$time, model2$residuals, ylab = "Residuals", xlab = "Time") + 
+  scale_x_discrete(labels = 1:3) + geom_hline(yintercept=0)
+v4 <- qplot(model2$model$nbirth, model2$residuals, ylab = "Residuals", xlab = "Number of births (nbirth)") +
+  geom_hline(yintercept=0)
+grid.arrange(v1, v2, v3, v4, ncol = 2)
+
 
 # Two step modeling -------------------------------------------------------
 
@@ -243,7 +254,6 @@ q + geom_abline(intercept = cows.fixef[1], slope = cows.fixef[2]) +
   geom_abline(aes(intercept = intercept, slope = time, colour = idDose), data = cows.ranef)
 
 # With block and longitudinal model ---------------------------------------
-
 cows.lme.nested <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|id/dose, data = cows.com)
 
 summary(cows.lme.nested)
@@ -265,11 +275,12 @@ qplot(time, id, data = ranEfDf, color = dose, size = I(4))
 
 # Validation 
 
-par(mfrow=c(2,2), mar=c(4,4,2,2), cex=0.6)
 model2 <- cows.lme.nested
 model2$residuals <- predict(model2)-cows.com$pcv
-plot(model2$residuals, model2$y, xlab="residuals", ylab="PCV")
-plot(model2$data$dose, model2$residuals, ylab="residuals", xlab="Dose")
-plot(model2$data$time, model2$residuals, ylab="residuals", xlab="Time")
-plot(model2$data$nbirth, model2$residuals, ylab="residuals", xlab="Number of births (nbirth)")
-
+v1 <- qplot(cows.com$pcv, model2$residuals, xlab = "PCV value", ylab = "Residuals")
+v1 <- v1 + geom_hline(yintercept=0) + geom_smooth(span = 1.2)
+v2 <- qplot(model2$data$dose, model2$residuals, ylab="Residuals", xlab = "Dose", geom = "boxplot", fill = model2$data$dose) + guides(fill = FALSE) + scale_x_discrete(labels = c("Low", "Medium", "High"))
+v3 <- qplot(model2$data$time, model2$residuals, ylab="Residuals", xlab="Time") + 
+  scale_x_discrete(labels = 1:3) + geom_hline(yintercept=0)
+v4 <- qplot(model2$data$nbirth, model2$residuals, ylab = "Residuals", xlab = "Number of births (nbirth)") + geom_hline(yintercept=0)
+grid.arrange(v1, v2, v3, v4, ncol = 2)
