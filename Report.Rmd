@@ -5,10 +5,10 @@ date: \today
 output:
   pdf_document:
     fig_caption: yes
+    keep_tex: yes
     number_sections: yes
     toc: yes
-header-includes:
-- \usepackage{float}
+header-includes: \usepackage{float}
 ---
 
 
@@ -674,7 +674,7 @@ Ann Trop Med Parasitol. 2004 Jan;98(1):21-7.](http://www.ncbi.nlm.nih.gov/pubmed
 Marcotty T, Simukoko H, Berkvens D, Vercruysse J, Praet N, Van den Bossche P.
 Prev Vet Med. 2008 Nov 17;87(3-4):288-300. doi: 10.1016/j.prevetmed.2008.05.002. Epub 2008 Jun 30.](http://www.sciencedirect.com/science/article/pii/S0167587708001098#)
 
-* [Linear Mixed Models for Longitudinal Data](http://www.springer.com/gp/book/9781441902993)
+* [Linear Mixed Models for Longitudinal Data. Verbeke, G. and Molenberghs, Springer Series in Statistics. Springer 2009](http://www.springer.com/gp/book/9781441902993)
 
 
 # Appendix
