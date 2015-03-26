@@ -288,23 +288,23 @@ anova(model2)
 Table \ref{taulamodels} summarizes the results of the estimation of the parameters of all models. The model selection which was used is the forward step-wise method. The last model corresponds to the most parsimonious one. It is the one that better explains the data, here is its specification:
 
 $$
-PCV= 15.82 + 2.43X_{time} -0.32X_{doseM} -1.31X_{doseH} -0.34X_{nbirth} + 0.48X_{doseM}X_{time} + 2.35X_{doseH}X_{time}
+PCV= 15.82 + 2.43time -0.32doseM -1.31doseHigh -0.34nbirth + 0.48doseMedium \cdot time + 2.35doseHigh \cdot time
 $$
 
 Although the coefficients for the additive effects for both doses are negative, when adding the interaction term it ensures a positive effect. The difference in PCV for the same cows treated with high dose with respect to low dose will be:
 
 $$
-PCV(X_{doseH}=1)-PCV(X_{doseL}=1) = -1.31+2.35X_{time} 
+PCV(doseHigh=1)-PCV(doseLow=1) = -1.31+2.35time
 $$
 
 Notice that for every time the result is positive. Therefore we can consider that the high dose has a bigger effect than low dose (both coefficients are significantly different from 0). For the medium dose the coefficients are not significant. These calculations are always with respect to the same cow, when being treated with different doses.
 
 $$
-PCV(X_{doseM}=1)-PCV(X_{doseL}=1) = -0.32+0.48X_{time} 
+PCV(doseMedium=1)-PCV(doseLow=1) = -0.32+0.48time
 $$
 
 Here the effect of the dose changes with the time in a synergistic way. 
-Also, time has a positive effect in the PCV(p$<$0.00001). However the number of births seems to have a significant negative effect in the PCV (p=0.01).
+Also, time has a positive effect in the PCV (p$<0.00001$). However the number of births seems to have a significant negative effect in the PCV (p=0.01).
 
 
 
@@ -361,11 +361,11 @@ grid.arrange(v1, v2, v3, v4, ncol = 2)
 
 In this section a two stage analysis is performed. A linear regression is fitted for each cow in the first stage. For this purpose a new variable _idDose_ was created merging id and dose, so that 30 different cows could be considered. Then, with the coefficients obtained, a second linear regression is done for the intercept and the slope conditioning on the dose.
 
-Several issues emerge with the missing values. As it was specified in the missing data analysis section, several cows have just a pcv value for time 1, so it was not possible to generate a slope. For instance cows number 6 and 9 treated with low dose do not have a slope after stage one.. 
+Several issues emerge with the missing values. As it was specified in the missing data analysis section, several cows have just a pcv value for time 1, so it was not possible to generate a slope. For instance, cows number 6 and 9 treated with low dose do not have a slope after stage one (i stands for the cow and j for the dose).
 
 __Stage 1 Model__
 
-$PCV_{ij} = \beta_{0ij} + \beta_{1ij}time + \epsilon_{ij}$ and $\epsilon_{ij} \sim N(0, \Sigma_ij)$
+$PCV_{ij} = \beta_{0ij} + \beta_{1ij}time + \epsilon_{ij}$ and $\epsilon_{ij} \sim N(0, \Sigma_{ij})$
 
 
 __Stage 2 Model__
@@ -374,7 +374,7 @@ $\beta_{0ij} = \beta_0 + \beta_1 doseMedium + \beta_2 doseHigh + b_{0ij}$
 
 $\beta_{1ij} = \beta_3 + \beta_4 doseMedium + \beta_5 doseHigh + b_{1ij}$
 
-where $b_i \sim N(0, D)$
+where $b_i \sim N(0, D)$.
 
 ```{r}
 cows.com$idDose <- paste(cows.com$id, cows.com$dose, sep = "_")
@@ -395,7 +395,7 @@ bdd <- left_join(betas, betas.info)
 # summary(modbeta1)
 ```
 
-Figure \ref{fig:two_stage_graph} shows all the linear regressions done at the first stage analysis. The slopes are positive for each dose but bigger for the high dose treatment. By comparing this Figure with Figure \ref{fig:qplot} one can notice that a lot of information about the variability is lost.
+Figure \ref{fig:two_stage_graph} shows all the linear regressions done at the first stage analysis. The slopes are positive for each dose but bigger for the high dose treatment. By comparing Figure \ref{fig:two_stage_graph} with Figure \ref{fig:qplot} one can notice that a lot of information about the variability is lost.
 
 ```{r two_stage_graph, fig.cap = "Each line represents the linear model fited for each cow and dose.\\label{fig:two_stage_graph}", fig.pos = "H"}
 # Graph option 1
@@ -493,7 +493,7 @@ $\beta_{0} + \beta_{1}time + \beta_2 doseMedium + \beta_3 doseHigh$ & 5 & 361.32
 \label{anovas:Random_slope_intercept}
 \end{table}
 
-Table \ref{anovas:Random_slope_intercept} includes different models with their comparison against the reference model. An information criterion (AIC) and the corresponding p-value is also included. Model 0 was the starting and reference model with only fixed effects. At model 1 a random effect was added at the time and for model 2 it was added at the intercept.
+Table \ref{anovas:Random_slope_intercept} includes different models with their comparison against the reference model. An information criterion (AIC) and the corresponding p-value is also included. Model 0 was the starting and reference model with only fixed effects. At model 1 a random effect was added at the time and for model 2 it was added at the intercept. Also the model with both, random intercept and slope was performed but did not converge or lead to confusing results.
 
 The models that included the random effect were significantly better than the reference one. In order to compare the two remaining models, the AIC was used because they were not nested and a LRT could not be performed. In this case model 2 was preferred as having lower AIC.
 
@@ -597,17 +597,22 @@ Those random effects modify the effect of time for each cow. The slope of time i
 
 Whenever the value of the random effect for the high dose is lower than the one for the other doses it can be explain by the data. In fact it is either due to missing values or a really specific cow. For instance cow 4 has a lower PCV value after time 2 for the high dose. The validation of this model can be seen in the appendix (Figure \ref{nesteddiagnostic}).
 
-# Discussion
+# Conclusion and discussion
 
 TODO(All): Revise comments
 
-The main objective of this study was to assess the efficiency of the different kinds of doses used to cure cows infected with the trypanosomosis parasite. As expected _time_ and _dose_ have a positive effect on PCV. However the effect of the dose varies with the kind of doses used. When comparing doses to the low dose as a reference it appears that the medium dose has not an effect significantly different from the low one. However the high dose is much more efficient. This is true when analysing the mean effect in a multivariate model and also for each cow when performing a linear mixed model.
+The main objective of this study was to assess the efficiency of the different kinds of doses used to cure cows infected with the trypanosomosis parasite. As expected _time_ and _dose_ have a positive effect on PCV. However the effect of the dose varies with the kind of doses used. 
+No differences were found when comparing medium dose with low dose, using either a multivariate model, a random slope model or a nested random effects model (id and id in dose). However, high dose was found to be significantly better than the low dose. 
 
-Giving birth is supposed to weaken the cow, besides *nbirth* is also an indicator of how old the cow is. Hence we should find a negative relation between the number of births and the PCV. First such a relation did not appear clearly in the descriptive analysis but models showed that indeed the number of births has a negative impact on the PCV.
+<!-- When comparing doses to the low dose as a reference it appears that the medium dose has not an effect significantly different from the low one. However the high dose is much more efficient. This is true when analysing the mean effect in a multivariate model and also for each cow when performing a linear mixed model.
+
+Giving birth is supposed to weaken the cow, besides *nbirth* is also an indicator of how old the cow is. In fact, a negative relation between the number of births and the PCV was found. Although such a relation did not appear clearly, at first, in the descriptive analysis, later models showed that indeed the number of births had a negative impact on the PCV.
+
+For all this, it seems pretty clear that Hight dose is more effective than medium or low, even when adjusted by the number of births. Also, no evidences were found that medium dose was better than low dose.
 
 # Limitations and Further research
 
-The relative low number of observations in the dataset makes difficult the analysis because as soon as a cow has particular results it influences a lot the results. A lot of assumptions were needed to study the data. In order to verify whether or not those assumptions can be validated we would have needed more information on the dataset. For instance the reason why values are missing could have helped us give a better interpretation of the results of the random effects of the linear mixed model. Besides having a _control_ cow would be useful to evaluate the need of the treatment. 
+The relative low number of observations in the dataset makes difficult the analysis because as soon as a cow has particular results it influences a lot. A lot of assumptions were needed to study the data. In order to verify whether or not those assumptions can be validated we would have needed more information on the dataset. For instance the reason why values are missing could have helped us give a better interpretation of the results of the random effects of the linear mixed model. Besides having a _control_ cow would be useful to evaluate the need of the treatment. 
 
 To clarify the dataset and in a way that assumptions are no longer needed, one can contact the person who collected the data. Adding some covariates may also help futur researchers predict PCV values based on the initial condition of a given cow.
 
