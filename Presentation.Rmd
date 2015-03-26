@@ -322,3 +322,17 @@ qplot(time, id, data = ranEfDf, color = doseExt, size = I(4)) + theme(legend.tit
 TODO(Gerard)
 
 # Conclusion
+
+* The high dose is much more efficient.
+* The number of births has a relative negative impact
+
+# Conclusion
+
+* Information and data could be added to the datset.
+* Missing values could be further analysed.
+
+--------
+
+![](images/cow.png)
+
+> Thank you for your attention! 
