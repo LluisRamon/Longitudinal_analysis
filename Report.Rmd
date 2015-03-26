@@ -621,7 +621,7 @@ taula <- cbind(taula.intervals, taula.sumslope[, 4:7])
 print(xtable(taula, label="intervals", caption="Summary of the estimations for the parameters for the nested model. \\label{tab:table_nested_params}"), include.rownames = FALSE, comment = FALSE, table.placement = "H")
 ```
 
-The parameters estimates of this model do not change much from previous model. Basically the estimate for medium dose is 0.297 (p = 0.6680) and 1.671 (p = 0.021) for high dose. With this model the high dose is significant and has a positive effect on pcv.
+The parameters estimates of this model do not change much from previous model. Basically the estimate for medium dose is 0.297 (p = 0.6680) and 1.671 (p = 0.021) for high dose. With this model the high dose is significant and has a positive effect on PCV. All parameter estimates can be seen in Table \ref{tab:table_nested_params}.
 
 Figure \ref{random_graph} shows the random effect of each dose within the cows.
 
@@ -655,9 +655,9 @@ No differences were found when comparing medium dose with low dose, using differ
 
 The relative low number of observations in the dataset makes difficult to generalize the results of the study. A lot of assumptions were needed to analyze the data. In order to verify whether or not those assumptions can be validated we would have needed more information on the dataset. Besides having an untreated cow as a control would have been useful to evaluate the need of the treatment. 
 
-To clarify the dataset and in a way that assumptions are no longer needed, one could contact the person who collected the data. Adding some covariates may also help futur researchers predict PCV values based on the initial condition of a given cow.
+To clarify the dataset and in a way that assumptions are no longer needed, one could contact the person who collected the data. Adding some covariates may also help future researchers predict PCV values based on the initial condition of a given cow.
 
-In order to further analyse the data some improvements are possible. Missing values can be imputed so that information is no longer lost in some part of the study. One can also try to find a proper correlation structure to add in the differents models. 
+In order to further analyse the data some improvements are possible. Missing values can be imputed so that information is no longer lost in some part of the study. One can also try to find a proper correlation structure to add in the different models. 
 
 
 \vspace{1cm}
