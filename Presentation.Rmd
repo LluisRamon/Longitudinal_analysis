@@ -47,10 +47,10 @@ Effects of the disease:
 # Dataset
 
 * 10 cows
-* response variable: PCV
-* covariates: _dose_, _time_, _nbirth_
+* Response variable: PCV
+* Covariates: _dose_, _time_, _nbirth_
 * 3 dose levels (High, Medium, Low)
-* idDose
+* New variable: idDose
 
 # Assumptions
 
@@ -185,7 +185,7 @@ PCV_i= \beta_0 + \beta_1time +\beta_2doseMedium + \beta_3doseHigh + \beta_4nbirt
   $\beta_{1,3}$ & time:doseH & 2.35 & 0.84 & 2.8 & 0.007 \\ 
   \hline
   \end{tabular}
-  \footnotesize{\caption{Multivariant model fitted.}
+  \footnotesize{\caption{Multivariate model fitted.}
                 \label{taulamodels}
   }
   \end{table}
@@ -285,7 +285,7 @@ $\beta_{5}$ (doseHigh)  &  2.6300 (0.001083)  \\
 
 * Combine two stages into one model
 * Account for within idDose variability
-* Groupping: idDose
+* Grouping: idDose
 
 # Methodology
 
@@ -314,11 +314,16 @@ $\beta_{5}$ (doseHigh)  &  2.6300 (0.001083)  \\
 
 # Final model with idDose
 
+* Random effect by idDose!
+
+
 \vspace{-1cm}
 \begin{align*}
 PCV_{i} = \beta_{0} + (\beta_{1} + b_{1i})time + \beta_2 doseMedium + \\
 \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}
 \end{align*}
+
+
 
 # Fixed and random effect of time
 
@@ -343,7 +348,7 @@ q + xlab("time") + ylab("PCV value") + theme(legend.title=element_blank())
 # Mixed effect model with id and nested dose
 
 * Same model as before
-* Groupping: id nested dose (id/dose)
+* Grouping: id nested dose (id/dose)
 
 \vspace{-1cm}
 \begin{align*}
@@ -380,6 +385,8 @@ Fixed Effects: &  &  &  &  \\
 # Random effect for time of dose in each id
 
 ```{r random_graph, fig.cap= "Random effect for time of dose in each id.", fig.height = 4, fig.width = 6, fig.pos = "H"}
+cows.lme.nested <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|id/dose, data = cows.com)
+
 randomEffects <- ranef(cows.lme.nested)
 ranEfDf <- randomEffects$dose
 ranEfDf <- add_rownames(ranEfDf, "idDose")
