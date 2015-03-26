@@ -42,9 +42,14 @@ One medicine, the Berenil, is used to cure the infected cattle. The aim of this 
 
 To assess the severity of the disease, the Packed-Cell Volume (PCV) is shown to be a good indicator. The PCV is the percentage of red blood cells in blood. The lower the PCV is, the less healthy the cow is. 
 
+\vspace{1cm}
+
 # Objective
 
 The aim of this study is to assess the efficacy of different doses of Berenil in cattle infected with the trypanosomosis parasite.
+
+
+\vspace{1cm}
 
 # Dataset
 
@@ -65,6 +70,9 @@ Since the gathering process of the data was unknown, several assumptions were ne
 * For a given cow, the previous treatments (high, medium or low) do not affect the following ones.
 * Missing values are completely at random.
 * Time intervals are the same and fixed.
+
+
+\vspace{1cm}
 
 # Statistical methods
 
@@ -105,6 +113,8 @@ To compare different models the same estimation method was needed. In case of ne
 
 A validation of the model was performed to check that the residuals were normal, homoscedastic and independent between them and to other relevant covariates. 
 
+
+\vspace{1cm}
 
 # Summary statistics
 
@@ -168,6 +178,8 @@ print(xtable(cor(cows.w[, c("1", "2", "3")], use = "pairwise.complete.obs"), cap
 
 This correlation structure was obtained for the time. A positive correlation can be observed in Table \ref{tab:correlation}. This means that a possible correlation structure can be applied to the data. One could use an autoregressive model AR(1) or a Compound Symmetry that implies that all distinct members of a cluster are equally correlated with each other. The total variation can be separated between the variation within cluster and the one between cluster. 
 
+
+\vspace{1cm}
 
 # Results
 
@@ -576,7 +588,38 @@ cows.lme.nested <- lme(pcv ~ time + dose + nbirth, random = ~0 + time|id/dose, d
 
 The model selected in the previous section was kept. Whereas the grouping was initially performed on _idDose_ it is now done on _id_ then _dose_. The point is to get the variability for each id then the variability within each _id_ for each dose. In this way we are getting a random effect for _id_ and for _dose_ in _id_. The second random effect differences the effect of time within each cow depending on the kind of doses that was administrated.
 
-$PCV_{ij} = \beta_{0} + (\beta_{1} + b_{1i} + b_{1ij})time + \beta_2 doseMedium + \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}$ and $\epsilon_{i} \sim N(0, \Sigma_ij)$ i stands for id, j stands fore dose.
+$PCV_{ij} = \beta_{0} + (\beta_{1} + b_{1i} + b_{1ij})time + \beta_2 doseMedium + \beta_3 doseHigh + \beta_4 numbirths + \epsilon_{i}$ and $\epsilon_{i} \sim N(0, \Sigma_ij)$ i stands for id, j stands for dose.
+
+```{r taulanested, results='asis'}
+
+taula.intervals <- matrix(nrow=12, ncol=3)
+colnames(taula.intervals) <- c(" ", "Parameter", "Estimate (95% CI)")
+intr <- intervals(cows.lme.nested)
+taula.intervals[1,1] <- "Fixed Effects:"
+taula.intervals[2:6,2] <- rownames(intr$fixed)
+taula.intervals[2:6,3] <- val.brackets(round(intr$fixed[,c(2,1,3)],2), between=", ")
+taula.intervals[7,1] <- "Random Effects:"
+taula.intervals[8,2] <- "id:"
+taula.intervals[9,2] <- rownames(intr[[2]]$id)
+taula.intervals[9,3] <- val.brackets(round(intr[[2]]$id[c(2,1,3)],2), between=", ")
+taula.intervals[10,2] <- "dose in id:"
+taula.intervals[11,2] <- rownames(intr[[2]]$dose)
+taula.intervals[11,3] <- val.brackets(round(intr[[2]]$dose[c(2,1,3)],2), between=", ")
+taula.intervals[12,1] <- "Within-group standard error:"
+taula.intervals[12,3] <- val.brackets(round(intr[[3]][2],2), round(intr[[3]][1],2), round(intr[[3]][3],2), between=", ")
+
+
+sumslope <- summary(cows.lme.nested)
+taula.sumslope <- matrix(nrow=12, ncol=7)
+colnames(taula.sumslope) <- c("", "Parameters", colnames(sumslope$tT))
+taula.sumslope[2:6,2] <- rownames(sumslope$tT)
+taula.sumslope[1,1] <- "Fixed Effects:"
+taula.sumslope[2:6,3:6] <- round(sumslope$tT[,-5],3)
+taula.sumslope[2:6,7] <- round.pval(sumslope$tT[,5])
+
+taula <- cbind(taula.intervals, taula.sumslope[, 4:7])
+print(xtable(taula, label="intervals", caption="Summary of the estimations for the parameters for the nested model. \\label{tab:table_nested_params}"), include.rownames = FALSE, comment = FALSE, table.placement = "H")
+```
 
 The parameters estimates of this model do not change much from previous model. Basically the estimate for medium dose is 0.297 (p = 0.6680) and 1.671 (p = 0.021) for high dose. With this model the high dose is significant and has a positive effect on pcv.
 
@@ -597,40 +640,40 @@ Those random effects modify the effect of time for each cow. The slope of time i
 
 Whenever the value of the random effect for the high dose is lower than the one for the other doses it can be explain by the data. In fact it is either due to missing values or a really specific cow. For instance cow 4 has a lower PCV value after time 2 for the high dose. The validation of this model can be seen in the appendix (Figure \ref{nesteddiagnostic}).
 
-# Conclusion and discussion
 
-TODO(All): Revise comments
+\vspace{1cm}
 
-The main objective of this study was to assess the efficiency of the different kinds of doses used to cure cows infected with the trypanosomosis parasite. As expected _time_ and _dose_ have a positive effect on PCV. However the effect of the dose varies with the kind of doses used. 
-No differences were found when comparing medium dose with low dose, using either a multivariate model, a random slope model or a nested random effects model (id and id in dose). However, high dose was found to be significantly better than the low dose. 
+# Conclusion
 
-<!-- When comparing doses to the low dose as a reference it appears that the medium dose has not an effect significantly different from the low one. However the high dose is much more efficient. This is true when analysing the mean effect in a multivariate model and also for each cow when performing a linear mixed model.
+The main objective of this study was to assess the efficiency of the different kinds of doses used to cure cows infected with the trypanosomosis parasite. As expected, _time_ and _dose_ have a positive effect on the PCV. However the effect of the dose varies with the kind of doses used. 
+No differences were found when comparing medium dose with low dose, using different models. However, high dose was found to be significantly better than the low dose. A negative relation between the number of births and the PCV was also found, especially in the models results.
 
-Giving birth is supposed to weaken the cow, besides *nbirth* is also an indicator of how old the cow is. In fact, a negative relation between the number of births and the PCV was found. Although such a relation did not appear clearly, at first, in the descriptive analysis, later models showed that indeed the number of births had a negative impact on the PCV.
 
-For all this, it seems pretty clear that Hight dose is more effective than medium or low, even when adjusted by the number of births. Also, no evidences were found that medium dose was better than low dose.
+\vspace{1cm}
 
 # Limitations and Further research
 
-The relative low number of observations in the dataset makes difficult the analysis because as soon as a cow has particular results it influences a lot. A lot of assumptions were needed to study the data. In order to verify whether or not those assumptions can be validated we would have needed more information on the dataset. For instance the reason why values are missing could have helped us give a better interpretation of the results of the random effects of the linear mixed model. Besides having a _control_ cow would be useful to evaluate the need of the treatment. 
+The relative low number of observations in the dataset makes difficult to generalize the results of the study. A lot of assumptions were needed to analyze the data. In order to verify whether or not those assumptions can be validated we would have needed more information on the dataset. Besides having an untreated cow as a control would have been useful to evaluate the need of the treatment. 
 
-To clarify the dataset and in a way that assumptions are no longer needed, one can contact the person who collected the data. Adding some covariates may also help futur researchers predict PCV values based on the initial condition of a given cow.
+To clarify the dataset and in a way that assumptions are no longer needed, one could contact the person who collected the data. Adding some covariates may also help futur researchers predict PCV values based on the initial condition of a given cow.
 
 In order to further analyse the data some improvements are possible. Missing values can be imputed so that information is no longer lost in some part of the study. One can also try to find a proper correlation structure to add in the differents models. 
 
-TODO(Mathieu):
- 
-* We did not explore interaction between time and dose in the linear mixed models.
-* May be there is some selection bias. Cows from other regions are not properly modeled. Need more data.
-* We de not have a control. We cannot estimate if some dosage is not needed.
-* It is not clear whici PCV value needed for a cow to be cured.
 
-TODO(All): Revise comments
+\vspace{1cm}
+
 
 # Bibliography
 
-* [Bovine trypanosomiasis in south-western Uganda: packed-cell volumes and prevalences of infection in the cattle.](http://www.ncbi.nlm.nih.gov/pubmed/15000727)
-* [Evaluating the use of packed cell volume as an indicator of trypanosomal infections in cattle in eastern Zambia](http://www.sciencedirect.com/science/article/pii/S0167587708001098#)
+
+* [Bovine trypanosomiasis in south-western Uganda: packed-cell volumes and prevalences of infection in the cattle.
+Waiswa C, Katunguka-Rwakishaya E.
+Ann Trop Med Parasitol. 2004 Jan;98(1):21-7.](http://www.ncbi.nlm.nih.gov/pubmed/15000727)
+
+* [Evaluating the use of packed cell volume as an indicator of trypanosomal infections in cattle in eastern Zambia.
+Marcotty T, Simukoko H, Berkvens D, Vercruysse J, Praet N, Van den Bossche P.
+Prev Vet Med. 2008 Nov 17;87(3-4):288-300. doi: 10.1016/j.prevetmed.2008.05.002. Epub 2008 Jun 30.](http://www.sciencedirect.com/science/article/pii/S0167587708001098#)
+
 * [Linear Mixed Models for Longitudinal Data](http://www.springer.com/gp/book/9781441902993)
 
 
@@ -647,14 +690,3 @@ v3 <- qplot(model2$data$time, model2$residuals, ylab="Residuals", xlab="Time") +
 v4 <- qplot(model2$data$nbirth, model2$residuals, ylab = "Residuals", xlab = "Number of births (nbirth)") + geom_hline(yintercept=0)
 grid.arrange(v1, v2, v3, v4, ncol = 2)
 ```
-
-TODO: details more or less important
-* first page should only contain the title and our names.
-* add some space between section.
-* figure 2 is misplaced, it should be before the paragraph before number of births.
-* table 3 should be after the model (the one after the first paragraph of multivariate model)
-* figure 3 should be before the paragraph before two stage analysis.
-* table 4 and 5 should ?aybe be after the paragraphs that give the explaination since we do not introduce the tables.
-* figure 4 should be before the paragraph before Mixed effect model with id and nested dose.
-* figure 5 should not be in middle of the paragraph.
-* Discussion and Limitation and further research should become one section COnclusion. It really weird to not have a conclusion section.
