@@ -41,9 +41,8 @@ Effects of the disease:
 
 # Objective
 
-The objective:
+> __Assess the efficacy of different doses of Berenil in infected cattle.__
 
-> Assess the efficacy of different doses of Berenil in infected cattle.
 
 # Dataset
 
@@ -84,8 +83,6 @@ g4 <- g3 +  scale_x_continuous(breaks = xdots,  labels = c(1:3, 1:3, 1:3))
 
 g4 <- g4 + theme_bw() + theme(axis.ticks.y = element_blank(), axis.text.y = element_blank())
   
-
-
 library("png")
 cow <- readPNG("images/cow.png")
 cowRed <- readPNG("images/cowRed.png")
@@ -212,19 +209,29 @@ __Stage 1 Model__
 $PCV_{ij} = \beta_{0ij} + \beta_{1ij}time + \epsilon_{ij}$ and $\epsilon_{ij} \sim N(0, \Sigma_ij)$
 
 
+```{r two_stage_graph, fig.align= 'center', fig.height = 3.5, fig.width = 8}
+cows.com$idDose <- paste(cows.com$id, cows.com$dose, sep = "_")
+cows.gd <- groupedData(pcv ~ time|idDose, data = cows.com, 
+                       outer = ~dose, inner = ~nbirth)
 
-# Two Stage Analysis
+cows.lmList <- nlme:::lmList(pcv ~ time, cows.gd)
+betas <- as.data.frame(coef(cows.lmList))
+names(betas) <- c("Intercept", "slope")
 
-```{r two_stage_graph, fig.cap = "Each line represents the linear model fited for each cow and dose.\\label{fig:two_stage_graph}"}
+betas <- add_rownames(betas, var = "idDose")
+betas.info <- cows.com %>% group_by(idDose, id, dose) %>% summarize(nbirth = mean(nbirth))
+bdd <- left_join(betas, betas.info)
 # Graph option 1
 # q <- qplot(factor(time), pcv, group = id, data = cows.com, geom = c("point", "line")) + facet_grid(dose ~ id)
 # q + geom_abline(aes(intercept = Intercept, slope = slope), colour = "red", data = bdd, alpha = 0.8)
 
-# bdd$doseExt <- factor(bdd$dose, labels = c("Low", "Medium", "High"))
+bdd$doseExt <- factor(bdd$dose, labels = c("Low", "Medium", "High"))
 # Graph option 2
 q <- qplot(factor(time), pcv, group = id, data = cows.com, geom = "point") + facet_grid(.~ doseExt)
-# q + geom_abline(aes(intercept = Intercept, slope = slope, colour = factor(doseExt)), data = bdd) + xlab("time") + ylab("PCV value")
+q + geom_abline(aes(intercept = Intercept, slope = slope, colour = factor(doseExt)), data = bdd) + xlab("time") + ylab("PCV value")
 ```
+
+# Two Stage Analysis
 
 __Stage 2 Model__
 
